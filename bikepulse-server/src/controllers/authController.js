@@ -132,6 +132,26 @@ exports.redirectToKakao = (req, res) => {
 };
 
 /**
+ * 🆕 구글 OAuth 콜백 (인가 코드를 프론트엔드로 전달)
+ */
+exports.googleLoginCallback = (req, res) => {
+    const { code } = req.query;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    logger.info(`[OAuth] Google Code Received, Redirecting to Frontend`);
+    res.redirect(`${frontendUrl}/auth/google/callback?code=${code}`);
+};
+
+/**
+ * 🆕 카카오 OAuth 콜백 (인가 코드를 프론트엔드로 전달)
+ */
+exports.kakaoLoginCallback = (req, res) => {
+    const { code } = req.query;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    logger.info(`[OAuth] Kakao Code Received, Redirecting to Frontend`);
+    res.redirect(`${frontendUrl}/auth/kakao/callback?code=${code}`);
+};
+
+/**
  * 🆕 구글 OAuth 로그인
  * POST /api/auth/google
  */

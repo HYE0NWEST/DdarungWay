@@ -75,6 +75,7 @@ router.post('/signup', authController.signup);
  *         description: 로그인 성공
  */
 router.get('/kakao', authController.redirectToKakao);
+router.get('/kakao/callback', authController.kakaoLoginCallback);
 router.post('/kakao', authController.kakaoLogin);
 
 /**
@@ -104,6 +105,7 @@ router.post('/kakao', authController.kakaoLogin);
  *         description: 로그인 성공
  */
 router.get('/google', authController.redirectToGoogle);
+router.get('/google/callback', authController.googleLoginCallback);
 router.post('/google', authController.googleLogin);
 
 
