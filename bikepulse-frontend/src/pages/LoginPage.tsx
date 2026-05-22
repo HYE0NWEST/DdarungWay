@@ -12,11 +12,11 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
 
   const handleKakaoLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/kakao`;
+    window.location.href = `https://ddarungway-server.onrender.com/api/auth/kakao`;
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
+    window.location.href = `https://ddarungway-server.onrender.com/api/auth/google`;
   };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
