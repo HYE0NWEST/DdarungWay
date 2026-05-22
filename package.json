@@ -1,0 +1,13 @@
+{
+  "name": "ddarungway-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix bikepulse-server && npm install --prefix bikepulse-frontend",
+    "dev": "npx concurrently \"npm run dev --prefix bikepulse-server\" \"npm run dev --prefix bikepulse-frontend\"",
+    "start": "npx concurrently \"npm start --prefix bikepulse-server\" \"npm start --prefix bikepulse-frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

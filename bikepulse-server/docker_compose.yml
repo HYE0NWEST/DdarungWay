@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  # 1. MongoDB 설정 (마스터 데이터 저장용)
+  mongodb:
+    image: mongo:latest
+    container_name: bikepulse-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo_data:/data/db
+
+  # 2. Redis 설정 (초고속 캐싱 및 RDB 백업용)
+  redis:
+    image: redis:latest
+    container_name: bikepulse-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis_data:/data
+    command: redis-server --save 300 1 --dir /data --dbfilename dump.rdb
