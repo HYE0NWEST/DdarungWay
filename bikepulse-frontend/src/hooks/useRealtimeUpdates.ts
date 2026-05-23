@@ -15,7 +15,7 @@ interface SSEEvent {
   title?: string;
 }
 
-const API_BASE_URL = 'https://ddarungway-server.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 /**
  * 전역 및 개인 실시간 이벤트를 수신하여 캐시를 정밀 업데이트하는 훅
