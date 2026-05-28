@@ -21,14 +21,6 @@ export function SignupPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
 
-  // 이메일이 변경되면 인증 상태 초기화
-  useEffect(() => {
-    setIsCodeSent(false);
-    setIsVerified(false);
-    setVerificationCode('');
-    setTimeLeft(0);
-  }, [formData.email]);
-
   // 타이머 로직
   useEffect(() => {
     if (timeLeft > 0) {
@@ -41,6 +33,19 @@ export function SignupPage() {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setFormData({ ...formData, email: newEmail });
+    
+    // 이메일이 변경되면 인증 상태 초기화
+    if (isCodeSent || isVerified || verificationCode || timeLeft > 0) {
+      setIsCodeSent(false);
+      setIsVerified(false);
+      setVerificationCode('');
+      setTimeLeft(0);
+    }
   };
 
   const handleSendCode = async () => {
@@ -142,7 +147,7 @@ export function SignupPage() {
               placeholder="example@bikepulse.com"
               className="flex-1 p-4 bg-gray-50 border-none rounded-2xl font-bold focus:ring-2 focus:ring-primary-500 transition-all outline-none disabled:opacity-50"
               value={formData.email}
-              onChange={e => setFormData({...formData, email: e.target.value})}
+              onChange={handleEmailChange}
               required
               disabled={isVerified}
             />

@@ -327,7 +327,6 @@ exports.signup = async (req, res) => {
         const accessToken = generateAccessToken(user._id);
         const refreshToken = generateRefreshToken(user._id);
 
-        const redisClient = getRedisClient();
         if (redisClient) {
             await redisClient.set(`refreshToken:${user._id}`, refreshToken, { EX: 1209600 });
         }
