@@ -14,8 +14,8 @@ const TICKETS = [
 
 export function PaymentPage() {
   const navigate = useNavigate();
-  const rawClientKey = import.meta.env.VITE_TOSS_CLIENT_KEY as string | undefined;
-  const clientKey = rawClientKey?.trim(); // 공백 제거
+  // 환경 변수 로딩 이슈로 인한 하드코딩 (Client Key는 공개되어도 안전함)
+  const clientKey = 'test_ck_5OWRapdA8dQNAJmyj7AP3o1zEqZK';
   const { history } = usePaymentStore();
   const { user } = useAuthStore();
   
