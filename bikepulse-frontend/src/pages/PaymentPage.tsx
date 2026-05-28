@@ -1,11 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ANONYMOUS, loadPaymentWidget } from '@tosspayments/payment-widget-sdk';
 import toast from 'react-hot-toast';
 import { ChevronLeft } from 'lucide-react';
 import { usePaymentStore } from '../stores/paymentStore';
 import { useAuthStore } from '../stores/authStore';
-import { apiClient } from '../services/api/client';
 
 const TICKETS = [
   { ticketType: 'DAILY_1H', label: '1일권 (1시간)', amount: 1000 },
@@ -15,10 +14,9 @@ const TICKETS = [
 
 export function PaymentPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const rawClientKey = import.meta.env.VITE_TOSS_CLIENT_KEY as string | undefined;
   const clientKey = rawClientKey?.trim(); // 공백 제거
-  const { fetchHistory, history } = usePaymentStore();
+  const { history } = usePaymentStore();
   const { user } = useAuthStore();
   
   const [selectedTicket, setSelectedTicket] = useState<(typeof TICKETS)[number]>(TICKETS[0]);
@@ -30,47 +28,7 @@ export function PaymentPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const paymentMethodsWidgetRef = useRef<any>(null);
 
-  // ✅ 1. 결제 승인 처리 (Redirect Callback)
-  useEffect(() => {
-    const paymentKey = searchParams.get('paymentKey');
-    const orderId = searchParams.get('orderId');
-    const amount = searchParams.get('amount');
-
-    if (paymentKey && orderId && amount) {
-      const processConfirm = async () => {
-        try {
-          setIsRequesting(true);
-          const savedTicketStr = sessionStorage.getItem('ddarungway_pending_ticket');
-          const savedTicket = savedTicketStr ? JSON.parse(savedTicketStr) as (typeof TICKETS)[number] : null;
-
-          if (!savedTicket) {
-            toast.error('이용권 정보를 찾을 수 없습니다. 다시 시도해주세요.');
-            return;
-          }
-
-          await apiClient.post('/payments/confirm', {
-            paymentKey,
-            orderId,
-            amount: Number(amount),
-            ticketType: savedTicket.ticketType,
-          });
-
-          toast.success('결제가 성공적으로 완료되었습니다!', { icon: '🚲', duration: 4000 });
-          sessionStorage.removeItem('ddarungway_pending_ticket');
-          void fetchHistory();
-        } catch (error) {
-          console.error('Payment confirmation error:', error);
-          toast.error('결제 승인 중 오류가 발생했습니다.');
-        } finally {
-          setIsRequesting(false);
-          window.history.replaceState({}, document.title, '/payment');
-        }
-      };
-      void processConfirm();
-    }
-  }, [searchParams, fetchHistory]);
-
-  // ✅ 2. 토스 결제 위젯 초기화
+  // ✅ 1. 토스 결제 위젯 초기화
   useEffect(() => {
     if (!clientKey) {
       console.error('Toss Client Key is missing in .env');
@@ -83,13 +41,12 @@ export function PaymentPage() {
     const initWidget = async () => {
       try {
         // SDK 로드 시작
-        console.log('Initializing Toss Widget with key:', clientKey?.slice(0, 10) + '...');
         const widget = await loadPaymentWidget(clientKey, ANONYMOUS);
         if (!isMounted) return;
         
         paymentWidgetRef.current = widget;
 
-        // 결제 UI 렌더링 (병렬 처리 시도 가능하지만 순차 처리가 안전)
+        // 결제 UI 렌더링
         const paymentMethodsWidget = widget.renderPaymentMethods(
           '#payment-method',
           { value: selectedTicket.amount },
@@ -102,7 +59,6 @@ export function PaymentPage() {
 
         // ✅ 위젯 렌더링 완료 이벤트 대기
         paymentMethodsWidget.on('ready', () => {
-          console.log('Toss Payment Widget is ready');
           if (isMounted) {
             setWidgetReady(true);
           }
@@ -122,7 +78,6 @@ export function PaymentPage() {
       }
     };
 
-    // 약간의 지연을 주어 DOM이 확실히 렌더링된 후 실행 (선택 사항)
     const timer = setTimeout(() => {
       void initWidget();
     }, 100);
@@ -132,16 +87,16 @@ export function PaymentPage() {
       clearTimeout(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientKey]); // clientKey가 바뀌지 않는 한 한 번만 실행됨
+  }, [clientKey]); 
 
-  // ✅ 3. 금액 변경 시 위젯 업데이트
+  // ✅ 2. 금액 변경 시 위젯 업데이트
   useEffect(() => {
     if (widgetReady && paymentMethodsWidgetRef.current && typeof paymentMethodsWidgetRef.current.updateAmount === 'function') {
       void paymentMethodsWidgetRef.current.updateAmount(selectedTicket.amount);
     }
   }, [selectedTicket.amount, widgetReady]);
 
-  // ✅ 4. 결제 요청 실행
+  // ✅ 3. 결제 요청 실행 (새로운 성공 페이지로 리다이렉트)
   const handlePaymentRequest = async () => {
     if (!paymentWidgetRef.current || !widgetReady) {
       toast.error('결제 준비가 되지 않았습니다. 잠시만 기다려주세요.');
@@ -151,13 +106,16 @@ export function PaymentPage() {
     setIsRequesting(true);
     try {
       const orderId = `ddarungway-${crypto.randomUUID().slice(0, 8)}-${Date.now()}`;
+      
+      // 승인 페이지에서 쓸 수 있도록 세션 스토리지에 저장
       sessionStorage.setItem('ddarungway_pending_ticket', JSON.stringify(selectedTicket));
 
+      // ✅ 성공/실패 시 PaymentSuccessPage로 이동하게 설정
       await paymentWidgetRef.current.requestPayment({
         orderId,
         orderName: selectedTicket.label,
-        successUrl: `${window.location.origin}/payment`,
-        failUrl: `${window.location.origin}/payment`,
+        successUrl: `${window.location.origin}/payment/success`,
+        failUrl: `${window.location.origin}/payment/success`, // 에러 파라미터도 같은 페이지에서 처리
         customerEmail: user?.email || 'user@ddarungway.com',
         customerName: user?.username || 'DdarungWay User',
       });
