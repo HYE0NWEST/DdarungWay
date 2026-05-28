@@ -35,12 +35,12 @@ export function LoginPage() {
       <div className="max-w-sm mx-auto w-full space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-black text-primary-500 tracking-tight">DdarungWay</h1>
-          <p className="text-neutral-500 font-bold uppercase text-[10px] tracking-[0.2em]">로그인하여 시작하기</p>
+          <p className="text-neutral-500 font-bold uppercase text-xs tracking-[0.2em]">로그인하여 시작하기</p>
         </div>
         
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="space-y-1.5">
-            <label className="text-xs font-black text-neutral-400 uppercase tracking-widest ml-1">이메일</label>
+            <label className="text-sm font-black text-neutral-400 uppercase tracking-widest ml-1">이메일</label>
             <input
               type="email"
               value={email}
@@ -51,7 +51,7 @@ export function LoginPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-black text-neutral-400 uppercase tracking-widest ml-1">비밀번호</label>
+            <label className="text-sm font-black text-neutral-400 uppercase tracking-widest ml-1">비밀번호</label>
             <input
               type="password"
               value={password}
@@ -65,7 +65,7 @@ export function LoginPage() {
             <button 
               type="button"
               onClick={() => navigate('/forgot-password')}
-              className="text-xs font-bold text-neutral-400 hover:text-primary-500 transition-colors"
+              className="text-sm font-bold text-neutral-400 hover:text-primary-500 transition-colors py-2 px-1"
             >
               비밀번호를 잊으셨나요?
             </button>
