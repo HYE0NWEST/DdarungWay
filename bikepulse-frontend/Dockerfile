@@ -14,10 +14,14 @@ RUN npm run build
 
 # 2. Production stage (Nginx)
 FROM nginx:stable-alpine
+
+# ✅ 기존 Nginx 기본 설정 삭제
+RUN rm /etc/nginx/conf.d/default.conf
+
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# ✅ 핵심: 설정 파일을 Nginx 설정 폴더로 복사
+# ✅ 설정 파일을 Nginx 설정 폴더로 복사
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
