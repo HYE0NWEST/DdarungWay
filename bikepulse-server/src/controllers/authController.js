@@ -115,7 +115,7 @@ exports.kakaoLogin = async (req, res) => {
  * GET /api/auth/google
  */
 exports.redirectToGoogle = (req, res) => {
-    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=email profile`;
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=email profile&prompt=select_account`;
     res.redirect(url);
 };
 
@@ -129,7 +129,8 @@ exports.redirectToKakao = (req, res) => {
     const redirectUri = process.env.KAKAO_REDIRECT_URI;
     
     // account_email 제거 (사용자 권한 문제로 KOE205 발생 방지)
-    const url = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=profile_nickname`;
+    // prompt=login 추가하여 매번 계정 확인창 노출
+    const url = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=profile_nickname&prompt=login`;
     res.redirect(url);
 };
 
