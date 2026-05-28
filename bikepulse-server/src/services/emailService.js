@@ -25,7 +25,7 @@ exports.sendVerificationEmail = async (email, code) => {
     }
 
     const mailOptions = {
-        from: `"BikePulse" <${process.env.BREVO_SMTP_USER}>`,
+        from: `"BikePulse" <maxfower@naver.com>`,
         to: email,
         subject: '[BikePulse] 회원가입 이메일 인증번호',
         html: `
