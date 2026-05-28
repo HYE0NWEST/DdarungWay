@@ -144,7 +144,7 @@ export function SignupPage() {
           <div className="flex gap-2">
             <input 
               type="email" 
-              placeholder="example@bikepulse.com"
+              placeholder="example@ddarungway.com"
               className="flex-1 p-4 bg-gray-50 border-none rounded-2xl font-bold focus:ring-2 focus:ring-primary-500 transition-all outline-none disabled:opacity-50"
               value={formData.email}
               onChange={handleEmailChange}
@@ -214,7 +214,7 @@ export function SignupPage() {
 
         <Button 
           type="submit" 
-          disabled={loading || !isVerified}
+          disabled={loading || !isVerified || !formData.password || !formData.confirmPassword}
           className="w-full py-7 rounded-2xl bg-primary-500 text-white font-black text-lg shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-all active:scale-95 disabled:bg-neutral-200 disabled:shadow-none mt-4"
         >
           {loading ? '처리 중...' : '회원가입 완료'}
