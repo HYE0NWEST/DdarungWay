@@ -5,9 +5,11 @@
 
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+const crypto = require('crypto');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 const { getRedisClient } = require('../config/redis'); // Redis 클라이언트 임포트
+const emailService = require('../services/emailService');
 
 // 1️⃣ Access Token 생성 함수 (짧은 수명: 예 - 1시간)
 const generateAccessToken = (id) => {
@@ -215,6 +217,69 @@ exports.googleLogin = async (req, res) => {
     } catch (error) {
         logger.error('Google Login Error:', error.response?.data || error.message);
         res.status(500).json({ status: 'error', message: '구글 로그인 처리 중 오류가 발생했습니다.' });
+    }
+};
+
+/**
+ * 🆕 인증번호 발송 API
+ * POST /api/auth/send-code
+ */
+exports.sendVerificationCode = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ status: 'fail', message: '이메일을 입력해주세요.' });
+
+        // 1. 6자리 랜덤 숫자 생성
+        const code = crypto.randomInt(100000, 999999).toString();
+
+        // 2. Redis에 저장 (Key: "verify:이메일", Value: "번호", TTL: 180초)
+        const redisClient = getRedisClient();
+        await redisClient.set(`verify:${email}`, code, { EX: 180 });
+
+        // 3. 메일 발송
+        const isSent = await emailService.sendVerificationEmail(email, code);
+
+        if (!isSent) {
+            return res.status(500).json({ status: 'error', message: '메일 발송에 실패했습니다.' });
+        }
+
+        res.status(200).json({ status: 'success', message: '인증번호가 발송되었습니다. (3분 내 입력)' });
+    } catch (error) {
+        logger.error('Send Verification Code Error:', error);
+        res.status(500).json({ status: 'error', message: '서버 오류가 발생했습니다.' });
+    }
+};
+
+/**
+ * 🆕 인증번호 검증 API
+ * POST /api/auth/verify-code
+ */
+exports.verifyCode = async (req, res) => {
+    try {
+        const { email, code } = req.body;
+        if (!email || !code) return res.status(400).json({ status: 'fail', message: '이메일과 인증번호를 모두 입력해주세요.' });
+
+        const redisClient = getRedisClient();
+        const storedCode = await redisClient.get(`verify:${email}`);
+
+        if (!storedCode) {
+            return res.status(400).json({ status: 'fail', message: '인증번호가 만료되었거나 이메일이 잘못되었습니다.' });
+        }
+
+        if (storedCode !== code) {
+            return res.status(400).json({ status: 'fail', message: '인증번호가 일치하지 않습니다.' });
+        }
+
+        // 인증 성공 시 Redis에서 삭제 (1회용)
+        await redisClient.del(`verify:${email}`);
+        
+        // 인증 완료 여부를 Redis에 별도로 기록하여 회원가입 시 최종 체크 가능 (10분간 유효)
+        await redisClient.set(`verified:${email}`, 'true', { EX: 600 }); 
+
+        res.status(200).json({ status: 'success', message: '이메일 인증이 완료되었습니다.' });
+    } catch (error) {
+        logger.error('Verify Code Error:', error);
+        res.status(500).json({ status: 'error', message: '서버 오류가 발생했습니다.' });
     }
 };
 

@@ -15,6 +15,55 @@ const { protect } = require('../middlewares/authMiddleware');
  *     
  */
 
+/**
+ * @swagger
+ * /api/auth/send-code:
+ *   post:
+ *     summary: 인증번호 이메일 발송
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: 인증번호 발송 성공
+ *       400:
+ *         description: 잘못된 요청
+ */
+router.post('/send-code', authController.sendVerificationCode);
+
+/**
+ * @swagger
+ * /api/auth/verify-code:
+ *   post:
+ *     summary: 인증번호 확인
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               code:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: 인증 성공
+ *       400:
+ *         description: 인증 실패 (만료 또는 불일치)
+ */
+router.post('/verify-code', authController.verifyCode);
 
 
 /**
