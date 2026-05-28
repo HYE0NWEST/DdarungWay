@@ -47,8 +47,9 @@ export function SignupPage() {
       toast.success('인증번호가 발송되었습니다.');
       setIsCodeSent(true);
       setTimeLeft(180); // 3분
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || '발송 실패');
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      toast.error(axiosError.response?.data?.message || '발송 실패');
     } finally {
       setLoading(false);
     }
@@ -69,8 +70,9 @@ export function SignupPage() {
       toast.success('이메일 인증이 완료되었습니다.');
       setIsVerified(true);
       setTimeLeft(0);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || '인증 실패');
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      toast.error(axiosError.response?.data?.message || '인증 실패');
     } finally {
       setLoading(false);
     }
