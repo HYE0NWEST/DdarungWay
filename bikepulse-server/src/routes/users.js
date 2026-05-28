@@ -116,4 +116,19 @@ router.post('/watchlist', protect, userController.toggleWatchlist);
 // GET /api/users/watchlist - 관심 목록 조회 (✅ protect 미들웨어)
 router.get('/watchlist', protect, userController.getWatchlist);
 
+/**
+ * @swagger
+ * /api/users/profile:
+ *   delete:
+ *     summary: 사용자 계정 탈퇴
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 계정 삭제 성공
+ */
+// DELETE /api/users/profile - 계정 탈퇴
+router.delete('/profile', protect, userController.deleteAccount);
+
 module.exports = router;

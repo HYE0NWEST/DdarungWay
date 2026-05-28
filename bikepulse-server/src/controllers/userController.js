@@ -159,4 +159,41 @@ const updatePassword = async (req, res) => {
     }
 };
 
-module.exports = { getUserProfile, updateUserProfile, updatePassword, toggleWatchlist, getWatchlist };
+/**
+ * 🆕 사용자 계정 탈퇴
+ */
+const deleteAccount = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // 1. Redis에서 Refresh Token 삭제 (즉시 로그아웃 효과)
+        const { getRedisClient } = require('../config/redis');
+        const redisClient = getRedisClient();
+        if (redisClient) {
+            await redisClient.del(`refreshToken:${userId}`);
+        }
+
+        // 2. 관심 정류소 데이터 삭제
+        const UserWatchlist = require('../models/UserWatchlist');
+        await UserWatchlist.deleteMany({ userId });
+
+        // 3. 사용자 계정 삭제
+        const user = await User.findByIdAndDelete(userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        }
+
+        logger.info(`[UserController] 사용자 탈퇴 완료: ${user.email} (ID: ${userId})`);
+
+        res.status(200).json({
+            success: true,
+            message: '계정이 성공적으로 삭제되었습니다.'
+        });
+    } catch (error) {
+        logger.error('[UserController] 계정 탈퇴 실패:', error.message);
+        res.status(500).json({ success: false, message: '계정 탈퇴 처리 중 오류가 발생했습니다.' });
+    }
+};
+
+module.exports = { getUserProfile, updateUserProfile, updatePassword, toggleWatchlist, getWatchlist, deleteAccount };

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ChevronLeft, User, Camera, Shield, ChevronRight, LogOut, Lock, X } from 'lucide-react';
+import { ChevronLeft, User, Camera, Shield, ChevronRight, LogOut, Lock, X, AlertTriangle, Trash2 } from 'lucide-react';
 import { apiClient } from '../services/api/client';
 import { useAuthStore } from '../stores/authStore';
 import { Button } from '../components/ui/button';
@@ -19,10 +19,12 @@ export function ProfileSettingsPage() {
     setUsername(user?.username || '');
   }
   
-  // ✅ 비밀번호 변경 모달 상태
+  // ✅ 모달 상태
   const [showPwdModal, setShowPwdModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [pwdData, setPwdData] = useState({ current: '', new: '', confirm: '' });
   const [isPwdSaving, setIsPwdSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleUpdateProfile = async () => {
     if (!username.trim()) {
@@ -36,7 +38,6 @@ export function ProfileSettingsPage() {
       toast.success('프로필이 업데이트되었습니다.');
       // 전역 상태 업데이트
       const { data } = await apiClient.get('/users/profile');
-      // 백엔드 응답이 { data: { name, email, socialProvider ... } } 형태일 수 있으므로 매핑 필요
       const updatedUser = data.data;
       if (user) {
         useAuthStore.setState({ 
@@ -80,6 +81,21 @@ export function ProfileSettingsPage() {
       toast.error(msg);
     } finally {
       setIsPwdSaving(false);
+    }
+  };
+
+  const handleAccountDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await apiClient.delete('/users/profile');
+      toast.success('계정이 삭제되었습니다. 그동안 이용해주셔서 감사합니다.');
+      await logout();
+      navigate('/');
+    } catch (error) {
+      toast.error('계정 삭제 실패');
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -136,7 +152,7 @@ export function ProfileSettingsPage() {
         </div>
 
         <div className="space-y-4 pt-2">
-          <h2 className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-2">기타</h2>
+          <h2 className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-2">계정 관리</h2>
           <div className="bg-white rounded-[28px] overflow-hidden shadow-sm border border-gray-100">
             <MenuButton icon={<User size={18} />} label="이용권 관리" onClick={() => navigate('/profile/pass')} />
             <button 
@@ -144,11 +160,21 @@ export function ProfileSettingsPage() {
                 await logout();
                 navigate('/login');
               }}
+              className="w-full p-5 flex items-center justify-between hover:bg-neutral-50 transition-colors border-b border-gray-50"
+            >
+              <div className="flex items-center gap-4">
+                <LogOut size={18} className="text-neutral-400" />
+                <span className="text-sm font-bold text-neutral-700">로그아웃</span>
+              </div>
+              <ChevronRight size={16} className="text-neutral-300" />
+            </button>
+            <button 
+              onClick={() => setShowDeleteModal(true)}
               className="w-full p-5 flex items-center justify-between hover:bg-red-50 transition-colors text-red-500"
             >
               <div className="flex items-center gap-4">
-                <LogOut size={18} />
-                <span className="text-sm font-bold">로그아웃</span>
+                <Trash2 size={18} />
+                <span className="text-sm font-bold">회원 탈퇴</span>
               </div>
               <ChevronRight size={16} className="text-red-200" />
             </button>
@@ -156,7 +182,7 @@ export function ProfileSettingsPage() {
         </div>
 
         <div className="text-center pt-4">
-          <p className="text-[10px] font-bold text-gray-300">DdarungWay v1.0.0</p>
+          <p className="text-[10px] font-bold text-gray-300">BikePulse v1.0.0</p>
         </div>
       </div>
 
@@ -211,6 +237,41 @@ export function ProfileSettingsPage() {
             >
               {isPwdSaving ? '변경 중...' : '비밀번호 변경하기'}
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ 회원 탈퇴 확인 모달 */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="w-full max-w-sm bg-white rounded-[32px] p-8 shadow-2xl text-center space-y-6">
+            <div className="flex justify-center">
+              <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center text-red-500">
+                <AlertTriangle size={40} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-black text-neutral-900">정말 탈퇴하시겠습니까?</h3>
+              <p className="text-sm font-bold text-neutral-500 leading-relaxed">
+                탈퇴 시 이용 내역, 관심 정류소 등<br />
+                모든 데이터가 즉시 삭제되며 복구할 수 없습니다.
+              </p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button 
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 py-4 bg-gray-100 text-neutral-600 font-black rounded-2xl hover:bg-gray-200 transition-all"
+              >
+                취소
+              </button>
+              <button 
+                onClick={handleAccountDelete}
+                disabled={isDeleting}
+                className="flex-1 py-4 bg-red-500 text-white font-black rounded-2xl hover:bg-red-600 transition-all shadow-lg shadow-red-500/30 disabled:opacity-50"
+              >
+                {isDeleting ? '탈퇴 중...' : '탈퇴하기'}
+              </button>
+            </div>
           </div>
         </div>
       )}
