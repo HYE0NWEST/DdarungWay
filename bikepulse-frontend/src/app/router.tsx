@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import { AppLayout } from '../components/AppLayout';
@@ -9,24 +10,24 @@ const PageLoader = () => (
   </div>
 );
 
-// Lazy Loading 적용
-const HomePage = lazy(() => import('../pages/HomePage').then(module => ({ default: module.HomePage })));
-const LoginPage = lazy(() => import('../pages/LoginPage').then(module => ({ default: module.LoginPage })));
-const SignupPage = lazy(() => import('../pages/SignupPage').then(module => ({ default: module.SignupPage })));
-const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage').then(module => ({ default: module.ForgotPasswordPage })));
-const MapPage = lazy(() => import('../pages/MapPage').then(module => ({ default: module.MapPage })));
-const PaymentPage = lazy(() => import('../pages/PaymentPage').then(module => ({ default: module.PaymentPage })));
-const ProfilePage = lazy(() => import('../pages/ProfilePage').then(module => ({ default: module.ProfilePage })));
-const TripPage = lazy(() => import('../pages/TripPage').then(module => ({ default: module.TripPage })));
-const KakaoCallback = lazy(() => import('../pages/KakaoCallback').then(module => ({ default: module.KakaoCallback })));
-const GoogleCallback = lazy(() => import('../pages/GoogleCallback').then(module => ({ default: module.GoogleCallback })));
-const ProfileSettingsPage = lazy(() => import('../pages/ProfileSettingsPage').then(module => ({ default: module.ProfileSettingsPage })));
-const ManagePassPage = lazy(() => import('../pages/ManagePassPage').then(module => ({ default: module.ManagePassPage })));
-const SupportPage = lazy(() => import('../pages/SupportPage').then(module => ({ default: module.SupportPage })));
-const NotificationSettingsPage = lazy(() => import('../pages/NotificationSettingsPage').then(module => ({ default: module.NotificationSettingsPage })));
-const TripHistoryPage = lazy(() => import('../pages/TripHistoryPage').then(module => ({ default: module.TripHistoryPage })));
-const LandingPage = lazy(() => import('../pages/LandingPage').then(module => ({ default: module.LandingPage })));
-const ProfileFavoritesPage = lazy(() => import('../pages/ProfileFavoritesPage').then(module => ({ default: module.ProfileFavoritesPage })));
+// Lazy Loading 적용 (컴포넌트 선언만 하여 lint 에러 방지)
+const HomePageComp = lazy(() => import('../pages/HomePage').then(module => ({ default: module.HomePage })));
+const LoginPageComp = lazy(() => import('../pages/LoginPage').then(module => ({ default: module.LoginPage })));
+const SignupPageComp = lazy(() => import('../pages/SignupPage').then(module => ({ default: module.SignupPage })));
+const ForgotPasswordPageComp = lazy(() => import('../pages/ForgotPasswordPage').then(module => ({ default: module.ForgotPasswordPage })));
+const MapPageComp = lazy(() => import('../pages/MapPage').then(module => ({ default: module.MapPage })));
+const PaymentPageComp = lazy(() => import('../pages/PaymentPage').then(module => ({ default: module.PaymentPage })));
+const ProfilePageComp = lazy(() => import('../pages/ProfilePage').then(module => ({ default: module.ProfilePage })));
+const TripPageComp = lazy(() => import('../pages/TripPage').then(module => ({ default: module.TripPage })));
+const KakaoCallbackComp = lazy(() => import('../pages/KakaoCallback').then(module => ({ default: module.KakaoCallback })));
+const GoogleCallbackComp = lazy(() => import('../pages/GoogleCallback').then(module => ({ default: module.GoogleCallback })));
+const ProfileSettingsPageComp = lazy(() => import('../pages/ProfileSettingsPage').then(module => ({ default: module.ProfileSettingsPage })));
+const ManagePassPageComp = lazy(() => import('../pages/ManagePassPage').then(module => ({ default: module.ManagePassPage })));
+const SupportPageComp = lazy(() => import('../pages/SupportPage').then(module => ({ default: module.SupportPage })));
+const NotificationSettingsPageComp = lazy(() => import('../pages/NotificationSettingsPage').then(module => ({ default: module.NotificationSettingsPage })));
+const TripHistoryPageComp = lazy(() => import('../pages/TripHistoryPage').then(module => ({ default: module.TripHistoryPage })));
+const LandingPageComp = lazy(() => import('../pages/LandingPage').then(module => ({ default: module.LandingPage })));
+const ProfileFavoritesPageComp = lazy(() => import('../pages/ProfileFavoritesPage').then(module => ({ default: module.ProfileFavoritesPage })));
 
 export const appRouter = createBrowserRouter([
   {
@@ -40,23 +41,23 @@ export const appRouter = createBrowserRouter([
           </Suspense>
         ),
         children: [
-          { index: true, element: <LandingPage /> },
-          { path: 'home', element: <HomePage /> },
-          { path: 'login', element: <LoginPage /> },
-          { path: 'signup', element: <SignupPage /> },
-          { path: 'forgot-password', element: <ForgotPasswordPage /> },
-          { path: 'auth/kakao/callback', element: <KakaoCallback /> },
-          { path: 'auth/google/callback', element: <GoogleCallback /> },
-          { path: 'map', element: <MapPage /> },
-          { path: 'trip', element: <TripPage /> },
-          { path: 'payment', element: <PaymentPage /> },
-          { path: 'profile', element: <ProfilePage /> },
-          { path: 'profile/history', element: <TripHistoryPage /> },
-          { path: 'profile/favorites', element: <ProfileFavoritesPage /> },
-          { path: 'profile/settings', element: <ProfileSettingsPage /> },
-          { path: 'profile/settings/notifications', element: <NotificationSettingsPage /> },
-          { path: 'profile/pass', element: <ManagePassPage /> },
-          { path: 'profile/support', element: <SupportPage /> },
+          { index: true, element: <LandingPageComp /> },
+          { path: 'home', element: <HomePageComp /> },
+          { path: 'login', element: <LoginPageComp /> },
+          { path: 'signup', element: <SignupPageComp /> },
+          { path: 'forgot-password', element: <ForgotPasswordPageComp /> },
+          { path: 'auth/kakao/callback', element: <KakaoCallbackComp /> },
+          { path: 'auth/google/callback', element: <GoogleCallbackComp /> },
+          { path: 'map', element: <MapPageComp /> },
+          { path: 'trip', element: <TripPageComp /> },
+          { path: 'payment', element: <PaymentPageComp /> },
+          { path: 'profile', element: <ProfilePageComp /> },
+          { path: 'profile/history', element: <TripHistoryPageComp /> },
+          { path: 'profile/favorites', element: <ProfileFavoritesPageComp /> },
+          { path: 'profile/settings', element: <ProfileSettingsPageComp /> },
+          { path: 'profile/settings/notifications', element: <NotificationSettingsPageComp /> },
+          { path: 'profile/pass', element: <ManagePassPageComp /> },
+          { path: 'profile/support', element: <SupportPageComp /> },
         ]
       }
     ],
