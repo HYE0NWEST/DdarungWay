@@ -61,6 +61,15 @@ export function LoginPage() {
               className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold focus:ring-2 focus:ring-primary-500 transition-all outline-none"
             />
           </div>
+          <div className="flex justify-end pt-1">
+            <button 
+              type="button"
+              onClick={() => navigate('/forgot-password')}
+              className="text-xs font-bold text-neutral-400 hover:text-primary-500 transition-colors"
+            >
+              비밀번호를 잊으셨나요?
+            </button>
+          </div>
           <Button 
             className="w-full py-7 rounded-2xl bg-primary-500 text-white font-black text-lg shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-all active:scale-95 mt-2" 
             type="submit" 

@@ -65,6 +65,29 @@ router.post('/send-code', authController.sendVerificationCode);
  */
 router.post('/verify-code', authController.verifyCode);
 
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: 비밀번호 찾기 (임시 비밀번호 발급)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@example.com"
+ *     responses:
+ *       200:
+ *         description: 임시 비밀번호 발송 성공
+ *       404:
+ *         description: 가입되지 않은 이메일
+ */
+router.post('/reset-password', authController.resetPassword);
 
 /**
  * @swagger

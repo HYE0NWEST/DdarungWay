@@ -285,6 +285,45 @@ exports.verifyCode = async (req, res) => {
 };
 
 /**
+ * 🆕 비밀번호 찾기 (임시 비밀번호 발급)
+ * POST /api/auth/reset-password
+ */
+exports.resetPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ status: 'fail', message: '이메일을 입력해주세요.' });
+        }
+
+        const user = await User.findOne({ email, socialProvider: 'local' });
+        
+        if (!user) {
+            return res.status(404).json({ status: 'fail', message: '해당 이메일로 가입된 일반 계정을 찾을 수 없습니다.' });
+        }
+
+        // 8자리 임시 비밀번호 생성 (영문 대소문자 + 숫자)
+        const tempPassword = crypto.randomBytes(4).toString('hex'); // ex) 8a4f9b2c
+
+        // 비밀번호 변경 (User 모델의 pre-save 훅이 자동으로 해싱함)
+        user.password = tempPassword;
+        await user.save();
+
+        // 메일 발송
+        const isSent = await emailService.sendTemporaryPasswordEmail(email, tempPassword);
+
+        if (!isSent) {
+            return res.status(500).json({ status: 'error', message: '임시 비밀번호 메일 발송에 실패했습니다.' });
+        }
+
+        res.status(200).json({ status: 'success', message: '임시 비밀번호가 이메일로 발송되었습니다.' });
+    } catch (error) {
+        logger.error('Reset Password Error:', error);
+        res.status(500).json({ status: 'error', message: '비밀번호 초기화 중 오류가 발생했습니다.' });
+    }
+};
+
+/**
  * 회원가입
  * POST /api/auth/signup
  */

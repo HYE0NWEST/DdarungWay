@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from '../components/AppLayout';
 import { LoginPage } from '../pages/LoginPage';
 import { SignupPage } from '../pages/SignupPage';
+import { ForgotPasswordPage } from '../pages/ForgotPasswordPage';
 import { MapPage } from '../pages/MapPage';
 import { PaymentPage } from '../pages/PaymentPage';
 import { ProfilePage } from '../pages/ProfilePage';
@@ -26,6 +27,7 @@ export const appRouter = createBrowserRouter([
       { path: 'home', element: <HomePage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+      { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'auth/kakao/callback', element: <KakaoCallback /> },
       { path: 'auth/google/callback', element: <GoogleCallback /> },
       { path: 'map', element: <MapPage /> },
