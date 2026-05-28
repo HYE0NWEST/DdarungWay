@@ -73,6 +73,7 @@ export function useRealtimeUpdates() {
           
           // Toast 표시
           toast(data.message, {
+            id: `personal-${data.id}`,
             icon: data.type === 'SNIPING' ? '🚲' : '🔔',
             duration: 4000,
             style: { borderLeft: '4px solid #f97316' }

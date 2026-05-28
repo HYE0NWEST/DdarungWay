@@ -43,4 +43,28 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) {
+              return 'react-vendor';
+            }
+            if (id.includes('framer-motion') || id.includes('lucide-react')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('html5-qrcode')) {
+              return 'qr-vendor';
+            }
+            if (id.includes('axios') || id.includes('zustand') || id.includes('@tanstack')) {
+              return 'tools-vendor';
+            }
+            return 'vendor';
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
 })

@@ -12,7 +12,42 @@
     <title>따릉웨이 (DdarungWay)</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <style>
+        .initial-loader {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          font-family: system-ui, -apple-system, sans-serif;
+          background-color: #ffffff;
+        }
+        .loader-spinner {
+          width: 48px;
+          height: 48px;
+          border: 5px solid #f3f3f3;
+          border-top: 5px solid #22c55e;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-bottom: 20px;
+        }
+        .loader-text {
+          font-weight: 800;
+          color: #111827;
+          font-size: 1.25rem;
+          letter-spacing: -0.025em;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+      <div class="initial-loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">DdarungWay</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

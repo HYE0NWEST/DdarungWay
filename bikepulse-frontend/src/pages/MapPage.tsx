@@ -182,17 +182,17 @@ export function MapPage() {
       </button>
 
       {/* 🔍 줌 컨트롤 버튼 */}
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 z-[100] flex flex-col gap-2">
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 z-[100] flex flex-col bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 overflow-hidden divide-y divide-gray-100">
         <button 
           onClick={handleZoomIn}
-          className="w-12 h-12 bg-white/90 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-xl border border-white/20 active:scale-95 transition-all"
+          className="w-12 h-12 flex items-center justify-center hover:bg-gray-50 active:bg-gray-100 transition-colors"
           aria-label="Zoom In"
         >
           <Plus size={24} className="text-neutral-800" />
         </button>
         <button 
           onClick={handleZoomOut}
-          className="w-12 h-12 bg-white/90 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-xl border border-white/20 active:scale-95 transition-all"
+          className="w-12 h-12 flex items-center justify-center hover:bg-gray-50 active:bg-gray-100 transition-colors"
           aria-label="Zoom Out"
         >
           <Minus size={24} className="text-neutral-800" />

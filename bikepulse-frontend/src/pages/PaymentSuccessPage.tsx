@@ -62,7 +62,7 @@ export function PaymentSuccessPage() {
           ticketType: savedTicket.ticketType,
         });
 
-        toast.success('이용권 구매가 완료되었습니다!', { duration: 4000 });
+        toast.success('이용권 구매가 완료되었습니다!', { id: 'payment-success', duration: 4000 });
         sessionStorage.removeItem('ddarungway_pending_ticket');
         void fetchHistory();
         
@@ -74,7 +74,7 @@ export function PaymentSuccessPage() {
       } catch (error: unknown) {
         console.error('Payment confirmation error:', error);
         const axiosError = error as AxiosError<{ message?: string }>;
-        toast.error(axiosError.response?.data?.message || '결제 승인 중 오류가 발생했습니다.');
+        toast.error(axiosError.response?.data?.message || '결제 승인 중 오류가 발생했습니다.', { id: 'payment-error' });
       }
     };
 

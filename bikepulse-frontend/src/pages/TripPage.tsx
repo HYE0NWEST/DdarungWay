@@ -121,16 +121,16 @@ export function TripPage() {
 
   // ✅ 대여 및 여정 관련 핸들러
   const handleStartRental = async () => {
-    if (!startStation || !destStation) return toast.error('출발지와 목적지를 선택해주세요.');
+    if (!startStation || !destStation) return toast.error('출발지와 목적지를 선택해주세요.', { id: 'trip-selection-error' });
     try {
       const { data: p } = await apiClient.get('/users/profile');
       if (!p.data.activePass || new Date(p.data.passExpiresAt) <= new Date()) {
-        toast.error('이용권이 만료되었습니다.');
+        toast.error('이용권이 만료되었습니다.', { id: 'pass-expired-error' });
         return navigate('/payment');
       }
       await reserveBike(startStation.stationId);
       vibrate([50, 50]);
-      toast.success('자전거가 10분간 예약되었습니다! 🚲');
+      toast.success('자전거가 10분간 예약되었습니다! 🚲', { id: 'trip-reserved' });
     } catch { /* store handles error */ }
   };
 
@@ -140,22 +140,22 @@ export function TripPage() {
     try {
       await startTrip(stationId);
       vibrate([50, 50, 50]);
-      toast.success('대여가 시작되었습니다. 즐거운 라이딩 되세요!');
-    } catch { toast.error('잠금 해제에 실패했습니다.'); }
+      toast.success('대여가 시작되었습니다. 즐거운 라이딩 되세요!', { id: 'trip-started' });
+    } catch { toast.error('잠금 해제에 실패했습니다.', { id: 'unlock-error' }); }
   }, [currentTrip, startStation, startTrip]);
 
   const handleTestRent = async () => {
     const stationId = startStation?.stationId || currentTrip?.startStationId;
-    if (!stationId) return toast.error('출발지 정보가 없습니다.');
+    if (!stationId) return toast.error('출발지 정보가 없습니다.', { id: 'test-rent-error' });
     try {
       await startTrip(stationId);
-      toast.success('[테스트] 즉시 대여가 시작되었습니다.');
+      toast.success('[테스트] 즉시 대여가 시작되었습니다.', { id: 'trip-started' });
     } catch { /* store handles error */ }
   };
 
   const handleReturn = async () => {
     const activeDest = destStation || (currentTrip?.endStationId ? { stationId: currentTrip.endStationId, name: currentTrip.endStationName } : null);
-    if (!currentTrip || !activeDest) return toast.error('반납처를 선택해주세요.');
+    if (!currentTrip || !activeDest) return toast.error('반납처를 선택해주세요.', { id: 'return-error' });
     const p1 = startStation ? getStationLatLng(startStation) : null;
     const p2 = getStationLatLng(activeDest as Station);
     const dist = p1 && p2 ? calculateDistance(p1.lat, p1.lng, p2.lat, p2.lng) : 2.0;
@@ -178,7 +178,7 @@ export function TripPage() {
     if (currentTrip.status === 'RESERVED') {
       if (window.confirm('예약을 취소하시겠습니까?')) {
         await cancelTrip(currentTrip._id, '사용자 예약 취소');
-        toast.success('예약이 취소되었습니다.');
+        toast.success('예약이 취소되었습니다.', { id: 'trip-cancelled' });
         navigate('/home');
       }
       return;
@@ -202,7 +202,7 @@ export function TripPage() {
         issueType: reportType,
         description: reportDesc
       });
-      toast.success('고장 신고가 접수되었습니다.');
+      toast.success('고장 신고가 접수되었습니다.', { id: 'report-submitted' });
       setIsReportModalOpen(false);
       setReportDesc('');
     } catch {
@@ -224,7 +224,7 @@ export function TripPage() {
     if (!decodedText.includes('SPB-')) {
       const now = Date.now();
       if (now - lastQrErrorRef.current > 3000) { // 3초에 한 번만 에러 메시지 띄움
-        toast.error('유효한 따릉이 QR 코드가 아닙니다.');
+        toast.error('유효한 따릉이 QR 코드가 아닙니다.', { id: 'qr-error' });
         lastQrErrorRef.current = now;
         vibrate(50);
       }
@@ -233,7 +233,7 @@ export function TripPage() {
 
     setIsScannerOpen(false);
     vibrate([100, 50, 100]);
-    toast.success('따릉이 QR 코드가 확인되었습니다!');
+    toast.success('따릉이 QR 코드가 확인되었습니다!', { id: 'qr-success' });
     void handleUnlockBike();
   }, [handleUnlockBike, setIsScannerOpen]);
 

@@ -25,7 +25,7 @@ export function LoginPage() {
     event.preventDefault();
     await login({ email, password });
     if (useAuthStore.getState().accessToken) {
-      toast.success('로그인 성공');
+      toast.success('로그인 성공', { id: 'login-success' });
       navigate('/home');
     }
   };

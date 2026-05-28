@@ -14,7 +14,7 @@ export function GoogleCallback() {
     const code = searchParams.get('code');
 
     if (!code) {
-      toast.error('구글 로그인 인가 코드가 없습니다.');
+      toast.error('구글 로그인 인가 코드가 없습니다.', { id: 'google-error' });
       navigate('/login');
       return;
     }
@@ -29,11 +29,11 @@ export function GoogleCallback() {
         // authStore에 토큰과 사용자 정보 저장
         setAuth(data.accessToken, data.refreshToken, data.data.user);
         
-        toast.success('구글 로그인 성공!');
+        toast.success('구글 로그인 성공!', { id: 'google-success' });
         navigate('/home');
       } catch (error) {
         console.error('Google login error:', error);
-        toast.error('구글 로그인 처리 중 오류가 발생했습니다.');
+        toast.error('구글 로그인 처리 중 오류가 발생했습니다.', { id: 'google-error' });
         navigate('/login');
       }
     };

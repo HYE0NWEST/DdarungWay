@@ -14,7 +14,7 @@ export function KakaoCallback() {
     const code = searchParams.get('code');
 
     if (!code) {
-      toast.error('카카오 로그인 인가 코드가 없습니다.');
+      toast.error('카카오 로그인 인가 코드가 없습니다.', { id: 'kakao-error' });
       navigate('/login');
       return;
     }
@@ -29,11 +29,11 @@ export function KakaoCallback() {
         // authStore에 토큰과 사용자 정보 저장
         setAuth(data.accessToken, data.refreshToken, data.data.user);
         
-        toast.success('카카오 로그인 성공!');
+        toast.success('카카오 로그인 성공!', { id: 'kakao-success' });
         navigate('/home');
       } catch (error) {
         console.error('Kakao login error:', error);
-        toast.error('카카오 로그인 처리 중 오류가 발생했습니다.');
+        toast.error('카카오 로그인 처리 중 오류가 발생했습니다.', { id: 'kakao-error' });
         navigate('/login');
       }
     };
