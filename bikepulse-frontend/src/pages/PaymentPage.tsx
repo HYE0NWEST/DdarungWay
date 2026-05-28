@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ANONYMOUS, loadPaymentWidget } from '@tosspayments/payment-widget-sdk';
+import { loadTossPayments } from '@tosspayments/payment-sdk';
 import toast from 'react-hot-toast';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, CreditCard } from 'lucide-react';
 import { usePaymentStore } from '../stores/paymentStore';
 import { useAuthStore } from '../stores/authStore';
 
@@ -20,98 +20,23 @@ export function PaymentPage() {
   const { user } = useAuthStore();
   
   const [selectedTicket, setSelectedTicket] = useState<(typeof TICKETS)[number]>(TICKETS[0]);
-  const [widgetReady, setWidgetReady] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
   
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentWidgetRef = useRef<any>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodsWidgetRef = useRef<any>(null);
-
-  // ✅ 1. 토스 결제 위젯 초기화
-  useEffect(() => {
-    if (!clientKey) {
-      console.error('Toss Client Key is missing in .env');
-      toast.error('결제 시스템 설정이 누락되었습니다.');
-      return;
-    }
-
-    let isMounted = true;
-
-    const initWidget = async () => {
-      try {
-        // SDK 로드 시작
-        const widget = await loadPaymentWidget(clientKey, ANONYMOUS);
-        if (!isMounted) return;
-        
-        paymentWidgetRef.current = widget;
-
-        // 결제 UI 렌더링
-        const paymentMethodsWidget = widget.renderPaymentMethods(
-          '#payment-method',
-          { value: selectedTicket.amount },
-          { variantKey: 'DEFAULT' }
-        );
-        paymentMethodsWidgetRef.current = paymentMethodsWidget;
-
-        // 약관 UI 렌더링
-        await widget.renderAgreement('#agreement', { variantKey: 'AGREEMENT' });
-
-        // ✅ 위젯 렌더링 완료 이벤트 대기
-        paymentMethodsWidget.on('ready', () => {
-          if (isMounted) {
-            setWidgetReady(true);
-          }
-        });
-
-      } catch (error: unknown) {
-        console.error('Widget init error:', error);
-        if (isMounted) {
-          const err = error as Error;
-          const msg = err.message || '';
-          if (msg.includes('401') || msg.includes('인증')) {
-            toast.error('결제 키 인증에 실패했습니다. .env 파일의 클라이언트 키를 확인해주세요.', { duration: 6000 });
-          } else {
-            toast.error('결제창을 불러오는 데 실패했습니다.');
-          }
-        }
-      }
-    };
-
-    const timer = setTimeout(() => {
-      void initWidget();
-    }, 100);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientKey]); 
-
-  // ✅ 2. 금액 변경 시 위젯 업데이트
-  useEffect(() => {
-    if (widgetReady && paymentMethodsWidgetRef.current && typeof paymentMethodsWidgetRef.current.updateAmount === 'function') {
-      void paymentMethodsWidgetRef.current.updateAmount(selectedTicket.amount);
-    }
-  }, [selectedTicket.amount, widgetReady]);
-
-  // ✅ 3. 결제 요청 실행 (새로운 성공 페이지로 리다이렉트)
+  // ✅ 1. 결제 요청 실행 (클래식 팝업 방식)
   const handlePaymentRequest = async () => {
-    if (!paymentWidgetRef.current || !widgetReady) {
-      toast.error('결제 준비가 되지 않았습니다. 잠시만 기다려주세요.');
-      return;
-    }
-
     setIsRequesting(true);
     try {
+      // SDK 로드 (위젯이 아닌 기본 결제창)
+      const tossPayments = await loadTossPayments(clientKey);
+      
       const orderId = `ddarungway-${crypto.randomUUID().slice(0, 8)}-${Date.now()}`;
       
       // 승인 페이지에서 쓸 수 있도록 세션 스토리지에 저장
       sessionStorage.setItem('ddarungway_pending_ticket', JSON.stringify(selectedTicket));
 
-      // ✅ 성공/실패 시 PaymentSuccessPage로 이동하게 설정
-      await paymentWidgetRef.current.requestPayment({
+      // ✅ 성공/실패 시 PaymentSuccessPage로 이동하게 설정 ('카드' 결제 수단 직접 호출)
+      await tossPayments.requestPayment('카드', {
+        amount: selectedTicket.amount,
         orderId,
         orderName: selectedTicket.label,
         successUrl: `${window.location.origin}/payment/success`,
@@ -119,9 +44,9 @@ export function PaymentPage() {
         customerEmail: user?.email || 'user@ddarungway.com',
         customerName: user?.username || 'DdarungWay User',
       });
-    } catch (error) {
+    } catch (error: unknown) {
       setIsRequesting(false);
-      const tossError = error as { code: string; message: string };
+      const tossError = error as { code?: string; message?: string };
       if (tossError.code === 'USER_CANCEL') {
         toast('결제가 취소되었습니다.');
       } else {
@@ -199,30 +124,27 @@ export function PaymentPage() {
               </div>
             </div>
 
-            {/* 오른쪽: 결제 위젯 및 버튼 */}
+            {/* 오른쪽: 결제 진행 버튼 (위젯 대신 심플한 화면) */}
             <div className="payment-method-area">
-              <h3 className="section-title">2. 결제 수단 확인</h3>
-              <div className="glass widget-container">
-                {!widgetReady && (
-                  <div className="loading-placeholder">
-                    <div className="spinner" />
-                    <p>결제 시스템을 불러오는 중...</p>
-                  </div>
-                )}
-                <div id="payment-method" />
-                <div id="agreement" />
+              <h3 className="section-title">2. 결제 진행</h3>
+              <div className="glass widget-container flex flex-col items-center justify-center text-center p-8 gap-4">
+                <CreditCard className="w-16 h-16 text-primary-200" />
+                <div>
+                  <h4 className="font-black text-lg mb-1">토스 간편결제 / 카드결제</h4>
+                  <p className="text-sm text-neutral-500">결제하기 버튼을 누르면 안전한 토스 결제창이 나타납니다.</p>
+                </div>
               </div>
 
               <button
                 className="btn btn-primary btn-pay"
-                disabled={!widgetReady || isRequesting}
+                disabled={isRequesting}
                 onClick={handlePaymentRequest}
               >
-                {isRequesting ? '결제 요청 중...' : `${selectedTicket.amount.toLocaleString()}원 결제하기`}
+                {isRequesting ? '결제 창 여는 중...' : `${selectedTicket.amount.toLocaleString()}원 결제하기`}
               </button>
               
               <p className="security-hint">
-                🔒 모든 결제 정보는 암호화되어 안전하게 처리됩니다.
+                🔒 모든 결제 정보는 토스페이먼츠를 통해 안전하게 처리됩니다.
               </p>
             </div>
           </div>
@@ -251,10 +173,7 @@ export function PaymentPage() {
         .ticket-card .price { font-size: 1.4rem; font-weight: 900; color: var(--text-main); }
         .ticket-card.active .price { color: var(--primary); }
 
-        .widget-container { border-radius: 24px; padding: 12px; min-height: 400px; position: relative; }
-        .loading-placeholder { position: absolute; inset: 0; display: flex; flexDirection: column; alignItems: center; justifyContent: center; gap: 12px; }
-        .spinner { width: 30px; height: 30px; border: 3px solid var(--border-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .widget-container { border-radius: 24px; padding: 12px; min-height: 250px; position: relative; }
 
         .btn-pay { 
           width: 100%; 

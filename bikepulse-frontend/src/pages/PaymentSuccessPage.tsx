@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { AxiosError } from 'axios';
 import { apiClient } from '../services/api/client';
 import { usePaymentStore } from '../stores/paymentStore';
 import { CheckCircle2, XCircle } from 'lucide-react';
@@ -70,9 +71,10 @@ export function PaymentSuccessPage() {
           navigate('/home', { replace: true });
         }, 3000);
 
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Payment confirmation error:', error);
-        toast.error(error.response?.data?.message || '결제 승인 중 오류가 발생했습니다.');
+        const axiosError = error as AxiosError<{ message?: string }>;
+        toast.error(axiosError.response?.data?.message || '결제 승인 중 오류가 발생했습니다.');
       }
     };
 
