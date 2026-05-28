@@ -122,7 +122,7 @@ export function SignupPage() {
   return (
     <div className="p-6 space-y-8 flex flex-col justify-center min-h-[80vh]">
       <div className="text-center">
-        <h1 className="text-3xl font-black text-primary-500">BikePulse</h1>
+        <h1 className="text-3xl font-black text-primary-500">DdarungWay</h1>
         <p className="text-neutral-500 font-bold mt-2">새로운 여정을 시작해보세요</p>
       </div>
 
