@@ -1,8 +1,8 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { tokenStorage } from '../storage/tokenStorage';
 
-// Force redeploy to fix SSE localhost issue
-const API_BASE_URL = 'https://ddarungway-server.onrender.com/api';
+// API Base URL 설정 (환경 변수 우선)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 type RetryableRequest = InternalAxiosRequestConfig & { _retry?: boolean };
 
