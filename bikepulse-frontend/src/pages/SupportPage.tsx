@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { ChevronLeft, ChevronDown, MessageCircle, ChevronRight } from 'lucide-react';
 
 interface FAQItem {
@@ -161,7 +162,10 @@ export function SupportPage() {
 
         {/* 1:1 문의 버튼 */}
         <div className="mt-8">
-          <button className="w-full bg-neutral-900 p-6 rounded-[28px] flex items-center justify-between group active:scale-95 transition-all">
+          <button 
+            onClick={() => toast.success('1:1 문의 기능은 현재 준비 중입니다. 잠시만 기다려 주세요!', { icon: '💬' })}
+            className="w-full bg-neutral-900 p-6 rounded-[28px] flex items-center justify-between group active:scale-95 transition-all"
+          >
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white">
                 <MessageCircle size={20} />
