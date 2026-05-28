@@ -619,7 +619,11 @@ export function TripPage() {
             </motion.div>
           ) : isPanelCollapsed ? null : (
             <motion.div key={currentTrip.status} initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} className={`rounded-[40px] p-8 shadow-2xl border pointer-events-auto relative ${currentTrip.status === 'RESERVED' ? 'bg-white/95 border-white/40' : 'bg-neutral-900 border-white/10 text-white'}`}>
-              <button onClick={() => setIsPanelCollapsed(true)} className="absolute top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-neutral-300/50 rounded-full hover:bg-neutral-400" />
+              {/* 🔼 개선된 패널 핸들 (더 잘 보이게 수정) */}
+              <div className="absolute top-0 left-0 right-0 h-8 flex items-center justify-center cursor-pointer" onClick={() => setIsPanelCollapsed(true)}>
+                <div className={`w-12 h-1.5 rounded-full transition-colors ${currentTrip.status === 'RESERVED' ? 'bg-neutral-200 group-hover:bg-neutral-300' : 'bg-white/20 group-hover:bg-white/40'}`} />
+              </div>
+
               {currentTrip.status === 'RESERVED' ? (
                 <div className="space-y-6 pt-2">
                   <div className="text-center space-y-2">
