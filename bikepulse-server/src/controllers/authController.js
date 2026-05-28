@@ -295,6 +295,19 @@ exports.signup = async (req, res) => {
             return res.status(400).json({ status: 'fail', message: '이메일, 비밀번호, 이름을 모두 입력해주세요.' });
         }
 
+        // 🆕 [보안 강화] 이메일 인증 여부 최종 확인
+        const redisClient = getRedisClient();
+        const isVerified = await redisClient.get(`verified:${email}`);
+        
+        // 환경 변수가 설정된 경우(실제 운영)에만 강제 적용하거나, 
+        // 테스트 편의를 위해 일단 항상 체크하도록 설정 (보안 우선)
+        if (!isVerified) {
+            return res.status(400).json({ 
+                status: 'fail', 
+                message: '이메일 인증이 완료되지 않았습니다. 인증번호를 먼저 확인해주세요.' 
+            });
+        }
+
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ status: 'fail', message: '이미 가입된 이메일입니다.' });
@@ -305,6 +318,9 @@ exports.signup = async (req, res) => {
             password,
             username
         });
+
+        // 회원가입 성공 후 인증 토큰 삭제 (재사용 방지)
+        await redisClient.del(`verified:${email}`);
 
         // 토큰 발급
         const accessToken = generateAccessToken(user._id);

@@ -21,6 +21,14 @@ export function SignupPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
 
+  // 이메일이 변경되면 인증 상태 초기화
+  useEffect(() => {
+    setIsCodeSent(false);
+    setIsVerified(false);
+    setVerificationCode('');
+    setTimeLeft(0);
+  }, [formData.email]);
+
   // 타이머 로직
   useEffect(() => {
     if (timeLeft > 0) {
