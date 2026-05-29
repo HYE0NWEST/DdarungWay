@@ -128,7 +128,7 @@ class PredictionService {
                 timestamp: new Date()
             };
 
-            logger.debug(`[Prediction] ${station.name}: ${result.predictedAvailability}% (신뢰도: ${confidence})`);
+            logger.info(`[Prediction] ${station.name}: ${result.predictedAvailability}% (신뢰도: ${confidence})`);
             return result;
 
         } catch (error) {
