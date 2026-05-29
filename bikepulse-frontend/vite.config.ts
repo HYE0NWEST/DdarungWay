@@ -5,6 +5,7 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/',
   plugins: [
     react(),
     VitePWA({
@@ -44,6 +45,7 @@ export default defineConfig({
     },
   },
   build: {
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
         manualChunks(id) {
