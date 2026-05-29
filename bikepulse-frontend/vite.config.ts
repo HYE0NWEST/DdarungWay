@@ -12,8 +12,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'DdarungWay',
-        short_name: 'DdarungWay',
+        name: 'BikePulse',
+        short_name: 'BikePulse',
         description: '실시간 공유 자전거 대여 서비스',
         theme_color: '#ffffff',
         background_color: '#ffffff',

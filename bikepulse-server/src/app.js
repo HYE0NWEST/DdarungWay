@@ -28,6 +28,7 @@ const tripRoutes = require('./routes/tripRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const notificationRoutes = require('./routes/notifications');
 const reportRoutes = require('./routes/reports');
+const inquiryRoutes = require('./routes/inquiries');
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/inquiries', inquiryRoutes);
 
 // ========== 에러 핸들러 ==========
 // eslint-disable-next-line no-unused-vars

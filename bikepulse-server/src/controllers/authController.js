@@ -40,8 +40,8 @@ exports.kakaoLogin = async (req, res) => {
         // 1. 인가 코드로 카카오 토큰 요청
         const tokenParams = new URLSearchParams();
         tokenParams.append('grant_type', 'authorization_code');
-        tokenParams.append('client_id', process.env.KAKAO_CLIENT_ID);
-        tokenParams.append('redirect_uri', process.env.KAKAO_REDIRECT_URI);
+        tokenParams.append('client_id', process.env.KAKAO_CLIENT_ID || process.env.KAKAO_REST_API_KEY);
+        tokenParams.append('redirect_uri', process.env.KAKAO_REDIRECT_URI || process.env.KAKAO_CALLBACK_URL);
         tokenParams.append('code', code);
 
         const tokenResponse = await axios.post('https://kauth.kakao.com/oauth/token', tokenParams, {
@@ -115,7 +115,9 @@ exports.kakaoLogin = async (req, res) => {
  * GET /api/auth/google
  */
 exports.redirectToGoogle = (req, res) => {
-    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=email profile&prompt=select_account`;
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const redirectUri = process.env.GOOGLE_REDIRECT_URI || process.env.GOOGLE_CALLBACK_URL;
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email profile&prompt=select_account`;
     res.redirect(url);
 };
 
@@ -124,9 +126,8 @@ exports.redirectToGoogle = (req, res) => {
  * GET /api/auth/kakao
  */
 exports.redirectToKakao = (req, res) => {
-    // 환경변수 이름은 .env에 설정하신 카카오 API 키 이름으로 맞춰주세요!
-    const clientId = process.env.KAKAO_REST_API_KEY || process.env.KAKAO_CLIENT_ID || process.env.KAKAO_MAP_API_KEY;
-    const redirectUri = process.env.KAKAO_REDIRECT_URI;
+    const clientId = process.env.KAKAO_CLIENT_ID || process.env.KAKAO_REST_API_KEY || process.env.KAKAO_MAP_API_KEY;
+    const redirectUri = process.env.KAKAO_REDIRECT_URI || process.env.KAKAO_CALLBACK_URL;
     
     // account_email 제거 (사용자 권한 문제로 KOE205 발생 방지)
     // prompt=login 추가하여 매번 계정 확인창 노출
@@ -171,7 +172,7 @@ exports.googleLogin = async (req, res) => {
             code,
             client_id: process.env.GOOGLE_CLIENT_ID,
             client_secret: process.env.GOOGLE_CLIENT_SECRET,
-            redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+            redirect_uri: process.env.GOOGLE_REDIRECT_URI || process.env.GOOGLE_CALLBACK_URL,
             grant_type: 'authorization_code',
         });
 

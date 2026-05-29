@@ -23,7 +23,7 @@
         "redis",
         "event-driven"
     ],
-    "author": "Your Name",
+    "author": "김현서",
     "license": "MIT",
     "dependencies": {
         "axios": "^1.16.1",

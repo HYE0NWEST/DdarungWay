@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import toast from 'react-hot-toast';
 import { ChevronLeft, ChevronDown, MessageCircle, ChevronRight } from 'lucide-react';
 
 interface FAQItem {
@@ -19,9 +18,9 @@ interface NoticeItem {
 const NOTICES: NoticeItem[] = [
   {
     id: 1,
-    title: "DdarungWay 서비스 런칭 안내",
+    title: "BikePulse 서비스 런칭 안내",
     date: "2026.05.22",
-    content: "안녕하세요, DdarungWay입니다. 더 똑똑하고 친환경적인 서울 라이딩을 위한 DdarungWay 서비스가 정식 출시되었습니다. 많은 이용 부탁드립니다!"
+    content: "안녕하세요, BikePulse입니다. 더 똑똑하고 친환경적인 서울 라이딩을 위한 BikePulse 서비스가 정식 출시되었습니다. 많은 이용 부탁드립니다!"
   },
   {
     id: 2,
@@ -163,7 +162,7 @@ export function SupportPage() {
         {/* 1:1 문의 버튼 */}
         <div className="mt-8">
           <button 
-            onClick={() => toast.success('1:1 문의 기능은 현재 준비 중입니다. 잠시만 기다려 주세요!', { icon: '💬' })}
+            onClick={() => navigate('/profile/support/inquiry')}
             className="w-full bg-neutral-900 p-6 rounded-[28px] flex items-center justify-between group active:scale-95 transition-all"
           >
             <div className="flex items-center gap-4">

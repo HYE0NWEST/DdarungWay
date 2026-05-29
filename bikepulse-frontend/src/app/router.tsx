@@ -28,6 +28,9 @@ const NotificationSettingsPageComp = lazy(() => import('../pages/NotificationSet
 const TripHistoryPageComp = lazy(() => import('../pages/TripHistoryPage').then(module => ({ default: module.TripHistoryPage })));
 const LandingPageComp = lazy(() => import('../pages/LandingPage').then(module => ({ default: module.LandingPage })));
 const ProfileFavoritesPageComp = lazy(() => import('../pages/ProfileFavoritesPage').then(module => ({ default: module.ProfileFavoritesPage })));
+const InquiryPageComp = lazy(() => import('../pages/InquiryPage').then(module => ({ default: module.InquiryPage })));
+const NewInquiryPageComp = lazy(() => import('../pages/NewInquiryPage').then(module => ({ default: module.NewInquiryPage })));
+const InquiryDetailPageComp = lazy(() => import('../pages/InquiryDetailPage').then(module => ({ default: module.InquiryDetailPage })));
 
 export const appRouter = createBrowserRouter([
   {
@@ -58,6 +61,9 @@ export const appRouter = createBrowserRouter([
           { path: 'profile/settings/notifications', element: <NotificationSettingsPageComp /> },
           { path: 'profile/pass', element: <ManagePassPageComp /> },
           { path: 'profile/support', element: <SupportPageComp /> },
+          { path: 'profile/support/inquiry', element: <InquiryPageComp /> },
+          { path: 'profile/support/inquiry/new', element: <NewInquiryPageComp /> },
+          { path: 'profile/support/inquiry/:id', element: <InquiryDetailPageComp /> },
         ]
       }
     ],
