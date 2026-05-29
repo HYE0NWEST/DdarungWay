@@ -215,26 +215,32 @@ export function HomePage() {
                     onClick={() => handleStationClick(station)}
                     className="bg-white p-4 rounded-[24px] border border-gray-100 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                         station.availableBikes > 3 ? 'bg-primary-50 text-primary-500' : 'bg-orange-50 text-orange-500'
                       }`}>
                         <Bike size={18} />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col min-w-0">
                         <h4 className="text-sm font-black text-neutral-800 line-clamp-1">{station.name}</h4>
-                        <p className="text-[10px] font-bold text-neutral-400">{station.address || '서울시 공공자전거'}</p>
-                        <div className="flex items-center gap-1 mt-1.5 bg-blue-50/50 w-max px-2 py-0.5 rounded-md border border-blue-100/50">
-                          <span className="text-[9px] font-black text-blue-600">
-                            {station.predictedAvailability != null 
-                              ? `예측 ${station.predictedAvailability}%` 
-                              : '예측 데이터 분석 중...'}
-                          </span>
-                          {station.predictedAvailability != null && (
-                            <span className="text-[8px]">
-                              {(station.confidence || 0) > 0.7 ? '⭐⭐⭐' : (station.confidence || 0) > 0.3 ? '⭐⭐' : '⭐'}
+                        <p className="text-[10px] font-bold text-neutral-400 line-clamp-1">{station.address || '서울시 공공자전거'}</p>
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          <div className={`px-2 py-0.5 rounded-md border flex items-center gap-1 ${
+                            station.predictedAvailability != null 
+                              ? 'bg-blue-50 border-blue-100 text-blue-600' 
+                              : 'bg-gray-50 border-gray-100 text-neutral-400'
+                          }`}>
+                            <span className="text-[9px] font-black uppercase tracking-tighter">
+                              {station.predictedAvailability != null 
+                                ? `예측 ${station.predictedAvailability}%` 
+                                : '분석 중'}
                             </span>
-                          )}
+                            {station.predictedAvailability != null && (
+                              <span className="text-[8px] opacity-80">
+                                {(station.confidence || 0) > 0.7 ? '⭐⭐⭐' : (station.confidence || 0) > 0.3 ? '⭐⭐' : '⭐'}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -40,8 +40,16 @@ class PredictionService {
             const currentCount = parseInt(currentCountStr) || 0;
 
             if (history.length < PREDICTION.MIN_DATA_POINTS) {
-                // 데이터 부족해도 정류소 기본 정보는 포함해서 반환
-                return {
+                // 🚀 개선: 데이터가 아예 없을 때도 사용자에게 '예측 시뮬레이션' 제공 (또는 기본값)
+                // 현재 자전거 수와 시간대를 고려한 휴리스틱 적용
+                const hour = new Date().getHours();
+                const isRushHour = (hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 20);
+                
+                // 자전거가 많으면 대여 가능성 높음, 러시아워에는 변동성 큼
+                let simulatedProb = currentCount > 5 ? 70 : currentCount > 0 ? 40 : 10;
+                if (isRushHour) simulatedProb = Math.max(simulatedProb - 20, 5);
+
+                const result = {
                     stationId,
                     stationName: station.name,
                     name: station.name,
@@ -51,11 +59,15 @@ class PredictionService {
                     currentBikeCount: currentCount,
                     availableBikes: currentCount,
                     bikeCount: currentCount,
-                    predictedAvailability: null,
+                    predictedAvailability: simulatedProb, // 시뮬레이션 값 제공
                     trend: TREND.STABLE,
-                    confidence: 0,
-                    reason: 'insufficient_data'
+                    confidence: 0.1, // 낮은 신뢰도
+                    reason: 'simulated_insufficient_data',
+                    timestamp: new Date()
                 };
+                
+                logger.info(`[Prediction] ${station.name}: ${result.predictedAvailability}% (시뮬레이션)`);
+                return result;
             }
 
             // 4. 변화 패턴 분석

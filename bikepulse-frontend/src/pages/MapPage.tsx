@@ -29,9 +29,12 @@ export function MapPage() {
       if (!mapContainerRef.current || !window.kakao) return;
 
       const state = location.state as { centerLat?: number; centerLng?: number } | null;
+      
+      // 🚀 우선순위 1: 전달받은 좌표가 있으면 해당 좌표를 중심으로
+      // 🚀 우선순위 2: 없으면 기본 서울시청 (GPS 로드 전까지)
       const initialCenter = state?.centerLat && state?.centerLng
         ? new window.kakao.maps.LatLng(state.centerLat, state.centerLng)
-        : new window.kakao.maps.LatLng(37.5665, 126.9780); // 기본 서울 시청
+        : new window.kakao.maps.LatLng(37.5665, 126.9780);
 
       const options = {
         center: initialCenter,
@@ -42,15 +45,14 @@ export function MapPage() {
       kakaoMapRef.current = map;
       setIsMapLoaded(true);
 
-      // GPS 위치 가져오기 (전달받은 좌표가 없을 때만 현재 위치로 이동)
-      if (navigator.geolocation && !state?.centerLat) {
+      // 🛰️ 전달받은 좌표가 있을 때만 해당 위치를 고수하고 GPS 업데이트를 생략하거나, 
+      // GPS는 마커만 찍고 중심 이동은 하지 않음
+      if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const userLat = position.coords.latitude;
             const userLng = position.coords.longitude;
             const userPos = new window.kakao!.maps.LatLng(userLat, userLng);
-            
-            map.setCenter(userPos);
             
             // 내 위치 마커 표시
             new window.kakao!.maps.Marker({
@@ -61,6 +63,11 @@ export function MapPage() {
                 new window.kakao!.maps.Size(31, 35)
               )
             });
+
+            // 전달받은 특정 좌표가 없을 때만 내 위치로 중심 이동
+            if (!state?.centerLat) {
+              map.setCenter(userPos);
+            }
           },
           (err) => console.warn('Geolocation failed:', err),
           { enableHighAccuracy: true }
@@ -69,7 +76,18 @@ export function MapPage() {
     }).catch(err => {
       console.error('Failed to load Kakao Map:', err);
     });
-  }, [kakaoAppKey, location.state]);
+  }, [kakaoAppKey]); // location.state 의존성 제거 (초기화 1회만)
+
+  // 1-1. 별도 Effect로 네비게이션 주소 이동 처리 (안전장치)
+  useEffect(() => {
+    if (isMapLoaded && kakaoMapRef.current && location.state) {
+      const state = location.state as { centerLat?: number; centerLng?: number };
+      if (state.centerLat && state.centerLng) {
+        const moveLatLng = new window.kakao!.maps.LatLng(state.centerLat, state.centerLng);
+        kakaoMapRef.current.setCenter(moveLatLng);
+      }
+    }
+  }, [isMapLoaded, location.state]);
 
   // 2. 정류소 데이터가 로드되면 마커 표시 (최적화 버전)
   const markerMapRef = useRef<Map<string, { marker: { setMap: (map: KakaoMapInstance | null) => void }, content: HTMLDivElement }>>(new Map());
