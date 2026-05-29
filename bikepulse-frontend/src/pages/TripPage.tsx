@@ -320,7 +320,7 @@ export function TripPage() {
       const statusClass = bikes === 0 ? 'empty' : bikes === 1 ? 'few' : (bikes < 5 && rate <= 25) ? 'moderate' : '';
 
       const content = document.createElement('div');
-      content.className = `custom-marker ${isStart ? 'start' : isDest ? 'dest' : ''} ${statusClass}`;
+      content.className = `custom-marker ${statusClass}`;
       content.innerHTML = `<span>${bikes}</span>`;
       overlaysRef.current.push(new window.kakao!.maps.CustomOverlay({ position: new window.kakao!.maps.LatLng(pos.lat, pos.lng), content, map: kakaoMapRef.current, zIndex: isStart || isDest ? 50 : 10 }));
 
