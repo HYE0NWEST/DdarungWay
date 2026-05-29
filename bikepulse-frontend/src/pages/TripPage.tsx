@@ -25,7 +25,6 @@ export function TripPage() {
   const navigate = useNavigate();
   const mapRef = useRef<HTMLDivElement | null>(null);
   const kakaoMapRef = useRef<KakaoMapInstance | null>(null);
-  const markersRef = useRef<KakaoMarkerInstance[]>([]);
   const overlaysRef = useRef<KakaoCustomOverlayInstance[]>([]);
   const routePolylineRef = useRef<KakaoPolylineInstance | null>(null);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);

@@ -4,13 +4,12 @@ import { ChevronLeft, Heart, X, Navigation, Plus, Minus } from 'lucide-react';
 import { loadKakaoMap } from '../services/map/mapUtils';
 import { useStations } from '../hooks/useStations';
 import { useUIStore } from '../stores/uiStore';
-import type { KakaoMapInstance, KakaoMarkerInstance } from '../types/kakao';
+import type { KakaoMapInstance } from '../types/kakao';
 
 export function MapPage() {
   const navigate = useNavigate();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const kakaoMapRef = useRef<KakaoMapInstance | null>(null);
-  const markersRef = useRef<KakaoMarkerInstance[]>([]);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   
   const { data: stations, isLoading } = useStations();
