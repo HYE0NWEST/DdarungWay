@@ -11,7 +11,7 @@ import { apiClient } from '../services/api/client';
 import { loadKakaoMap, getStationLatLng, calculateDistance } from '../services/map/mapUtils';
 import { vibrate } from '../lib/utils';
 import type { Station } from '../stores/types';
-import type { KakaoMapInstance, KakaoMarkerInstance, KakaoPolylineInstance, KakaoCustomOverlayInstance } from '../types/kakao';
+import type { KakaoMapInstance, KakaoPolylineInstance, KakaoCustomOverlayInstance } from '../types/kakao';
 
 // 하위 컴포넌트 임포트
 import { TripMap } from '../components/trip/TripMap';
@@ -270,7 +270,12 @@ export function TripPage() {
       const { data } = await apiClient.post('/routes/pedestrian', { startX: s.lng, startY: s.lat, endX: e.lng, endY: e.lat });
       const path = (data.data.coordinates as [number, number][]).map(([lng, lat]) => new window.kakao!.maps.LatLng(lat, lng));
       if (routePolylineRef.current) routePolylineRef.current.setMap(null);
-      const polyline = new window.kakao!.maps.Polyline({ path, strokeWeight: 6, strokeColor: '#3498db', strokeOpacity: 0.8 });
+      const polyline = new window.kakao!.maps.Polyline({ 
+        path, 
+        strokeWeight: 6, 
+        strokeColor: '#22c55e', 
+        strokeOpacity: 0.8 
+      });
       polyline.setMap(kakaoMapRef.current);
       routePolylineRef.current = polyline;
       const bounds = new window.kakao!.maps.LatLngBounds();
@@ -302,9 +307,8 @@ export function TripPage() {
 
   useEffect(() => {
     if (!mapReady || !kakaoMapRef.current || !window.kakao?.maps) return;
-    markersRef.current.forEach(m => m.setMap(null));
     overlaysRef.current.forEach(o => o.setMap(null));
-    markersRef.current = []; overlaysRef.current = [];
+    overlaysRef.current = [];
 
     const isRouteActive = (startStation && destStation) || currentTrip;
     recommendations.forEach(station => {
@@ -322,16 +326,22 @@ export function TripPage() {
       const content = document.createElement('div');
       content.className = `custom-marker ${statusClass}`;
       content.innerHTML = `<span>${bikes}</span>`;
-      overlaysRef.current.push(new window.kakao!.maps.CustomOverlay({ position: new window.kakao!.maps.LatLng(pos.lat, pos.lng), content, map: kakaoMapRef.current, zIndex: isStart || isDest ? 50 : 10 }));
-
-      const marker = new window.kakao!.maps.Marker({ position: new window.kakao!.maps.LatLng(pos.lat, pos.lng), map: kakaoMapRef.current, opacity: 0, zIndex: 100 });
-      window.kakao!.maps.event.addListener(marker, 'click', () => {
+      
+      // ✅ 오버레이 자체에 클릭 이벤트 추가
+      content.style.cursor = 'pointer';
+      content.onclick = () => {
         if (!currentTrip) {
           if (!startStation || (startStation && destStation)) { setStartStation(station); setDestStation(null); }
           else setDestStation(station);
         } else setDestStation(station);
-      });
-      markersRef.current.push(marker);
+      };
+
+      overlaysRef.current.push(new window.kakao!.maps.CustomOverlay({ 
+        position: new window.kakao!.maps.LatLng(pos.lat, pos.lng), 
+        content, 
+        map: kakaoMapRef.current, 
+        zIndex: isStart || isDest ? 50 : 10 
+      }));
     });
   }, [mapReady, recommendations, startStation, destStation, currentTrip, setStartStation, setDestStation]);
 
@@ -415,8 +425,6 @@ export function TripPage() {
 
       <style>{`
         .custom-marker { width: 28px; height: 28px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: white; background: #2ecc71; transition: all 0.3s; }
-        .custom-marker.start { background: #3498db; width: 36px; height: 36px; font-size: 12px; z-index: 50; }
-        .custom-marker.dest { background: #e74c3c; width: 36px; height: 36px; font-size: 12px; z-index: 50; }
         .custom-marker.empty { background: #95a5a6; }
         .custom-marker.few { background: #e74c3c; }
         .custom-marker.moderate { background: #e67e22; }

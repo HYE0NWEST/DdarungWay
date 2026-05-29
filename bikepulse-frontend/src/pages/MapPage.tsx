@@ -122,9 +122,16 @@ export function MapPage() {
         content.style.color = 'white';
         content.style.backgroundColor = bgColor;
         content.innerHTML = `${availableBikes}`;
+        content.style.cursor = 'pointer';
 
         const markerPosition = new window.kakao!.maps.LatLng(station.lat, station.lng);
         
+        content.onclick = () => {
+          setSelectedStationId(station.id);
+          setBottomSheetOpen(true);
+          map.panTo(markerPosition);
+        };
+
         const overlay = new window.kakao!.maps.CustomOverlay({
           position: markerPosition,
           content: content,
@@ -132,25 +139,7 @@ export function MapPage() {
           zIndex: 10
         });
 
-        const invisibleMarker = new window.kakao!.maps.Marker({
-          position: markerPosition,
-          map: map,
-          image: new window.kakao!.maps.MarkerImage(
-            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
-            new window.kakao!.maps.Size(32, 32)
-          ),
-          opacity: 0,
-          zIndex: 100
-        });
-
-        window.kakao!.maps.event.addListener(invisibleMarker, 'click', () => {
-          setSelectedStationId(station.id);
-          setBottomSheetOpen(true);
-          map.panTo(markerPosition);
-        });
-
         markerMapRef.current.set(station.id, { marker: overlay, content });
-        markersRef.current.push(invisibleMarker);
       }
     });
   }, [isMapLoaded, stations, setSelectedStationId, setBottomSheetOpen]);
