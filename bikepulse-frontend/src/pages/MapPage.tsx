@@ -257,6 +257,14 @@ function StationBottomSheet() {
 
   if (!isBottomSheetOpen || !selectedStation) return null;
 
+  const getPredictionMessage = (prob: number) => {
+    if (prob >= 80) return "금방 자전거가 들어올 것 같아요! 🚀";
+    if (prob >= 60) return "곧 이용 가능할 확률이 높아요 👍";
+    if (prob >= 40) return "여유로운 이용이 예상돼요 ✨";
+    if (prob >= 20) return "현재 상태가 유지될 것 같아요 🚲";
+    return "당분간 대여가 어려울 수 있어요 ⏳";
+  };
+
   const handleStartRental = () => {
     closeBottomSheet();
     navigate('/trip', { 
@@ -282,7 +290,29 @@ function StationBottomSheet() {
       <div className="flex justify-between items-start mb-4">
         <div>
           <h2 className="text-xl font-bold text-neutral-900">{selectedStation.name}</h2>
-          <p className="text-sm text-neutral-500">{selectedStation.address || '상세 주소 정보 없음'}</p>
+          {selectedStation.address && (
+            <p className="text-sm text-neutral-500 mt-0.5">{selectedStation.address}</p>
+          )}
+          
+          {/* 예측 정보 추가 */}
+          <div className="flex items-center gap-1.5 mt-2">
+            <div className={`px-2 py-1 rounded-lg border flex items-center gap-2 ${
+              selectedStation.predictedAvailability != null 
+                ? 'bg-blue-50 border-blue-100 text-blue-600' 
+                : 'bg-gray-50 border-gray-100 text-neutral-400'
+            }`}>
+              <span className="text-[10px] font-black uppercase tracking-tighter">
+                {selectedStation.predictedAvailability != null 
+                  ? getPredictionMessage(selectedStation.predictedAvailability) 
+                  : '데이터 분석 중...'}
+              </span>
+              {selectedStation.predictedAvailability != null && (
+                <span className="text-[10px] opacity-80 shrink-0">
+                  {(selectedStation.confidence || 0) > 0.7 ? '⭐⭐⭐' : (selectedStation.confidence || 0) > 0.3 ? '⭐⭐' : '⭐'}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
         <button 
           onClick={closeBottomSheet}

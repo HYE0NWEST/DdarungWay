@@ -11,6 +11,8 @@ export interface UIStation {
   shared: number;
   congestionStatus: string;
   address?: string;
+  predictedAvailability?: number | null;
+  confidence?: number;
 }
 
 interface RawStation {
@@ -24,6 +26,8 @@ interface RawStation {
   shared?: number;
   congestionStatus?: string;
   address?: string;
+  predictedAvailability?: number | null;
+  confidence?: number;
 }
 
 export function useStations() {
@@ -45,6 +49,8 @@ export function useStations() {
         shared: station.shared || 0,
         congestionStatus: station.congestionStatus || '데이터 없음',
         address: station.address,
+        predictedAvailability: station.predictedAvailability,
+        confidence: station.confidence,
       }));
     },
   });

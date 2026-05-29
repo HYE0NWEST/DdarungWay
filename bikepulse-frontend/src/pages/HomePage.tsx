@@ -84,6 +84,14 @@ export function HomePage() {
     return "행복한 밤이에요";
   };
 
+  const getPredictionMessage = (prob: number) => {
+    if (prob >= 80) return "금방 자전거가 들어올 것 같아요! 🚀";
+    if (prob >= 60) return "곧 이용 가능할 확률이 높아요 👍";
+    if (prob >= 40) return "여유로운 이용이 예상돼요 ✨";
+    if (prob >= 20) return "현재 상태가 유지될 것 같아요 🚲";
+    return "당분간 대여가 어려울 수 있어요 ⏳";
+  };
+
   return (
     <div className="flex flex-col h-full bg-gray-50/50">
       <div className="flex-1 overflow-y-auto pb-32 scrollbar-hide">
@@ -225,18 +233,18 @@ export function HomePage() {
                         <h4 className="text-sm font-black text-neutral-800 line-clamp-1">{station.name}</h4>
                         <p className="text-[10px] font-bold text-neutral-400 line-clamp-1">{station.address || '서울시 공공자전거'}</p>
                         <div className="flex items-center gap-1.5 mt-1.5">
-                          <div className={`px-2 py-0.5 rounded-md border flex items-center gap-1 ${
+                          <div className={`px-2 py-0.5 rounded-md border flex items-center gap-1.5 ${
                             station.predictedAvailability != null 
                               ? 'bg-blue-50 border-blue-100 text-blue-600' 
                               : 'bg-gray-50 border-gray-100 text-neutral-400'
                           }`}>
                             <span className="text-[9px] font-black uppercase tracking-tighter">
                               {station.predictedAvailability != null 
-                                ? `예측 ${station.predictedAvailability}%` 
-                                : '분석 중'}
+                                ? getPredictionMessage(station.predictedAvailability) 
+                                : '데이터 분석 중...'}
                             </span>
                             {station.predictedAvailability != null && (
-                              <span className="text-[8px] opacity-80">
+                              <span className="text-[8px] opacity-80 shrink-0">
                                 {(station.confidence || 0) > 0.7 ? '⭐⭐⭐' : (station.confidence || 0) > 0.3 ? '⭐⭐' : '⭐'}
                               </span>
                             )}
