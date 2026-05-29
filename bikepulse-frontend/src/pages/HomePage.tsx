@@ -206,19 +206,29 @@ export function HomePage() {
                       }`}>
                         <Bike size={18} />
                       </div>
-                      <div>
+                      <div className="flex flex-col">
                         <h4 className="text-sm font-black text-neutral-800 line-clamp-1">{station.name}</h4>
                         <p className="text-[10px] font-bold text-neutral-400">{station.address || '서울시 공공자전거'}</p>
+                        {station.predictedAvailability != null && station.predictedAvailability > 0 && (
+                          <div className="flex items-center gap-1 mt-1.5 bg-blue-50/50 w-max px-2 py-0.5 rounded-md border border-blue-100/50">
+                            <span className="text-[9px] font-black text-blue-600">
+                              예측 {station.predictedAvailability}%
+                            </span>
+                            <span className="text-[8px]">
+                              {(station.confidence || 0) > 0.7 ? '⭐⭐⭐' : (station.confidence || 0) > 0.3 ? '⭐⭐' : '⭐'}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex flex-col justify-between h-full">
                       <p className={`text-lg font-black ${
                         station.availableBikes > 0 ? 'text-neutral-900' : 'text-red-400'
                       }`}>
                         {station.availableBikes}
                         <span className="text-[10px] text-neutral-400 ml-1 font-bold">대</span>
                       </p>
-                      <div className="flex items-center gap-1 justify-end">
+                      <div className="flex items-center gap-1 justify-end mt-2">
                          <div className={`w-1.5 h-1.5 rounded-full ${
                            station.availableBikes > 5 ? 'bg-green-400' : station.availableBikes > 0 ? 'bg-orange-400' : 'bg-red-400'
                          }`} />

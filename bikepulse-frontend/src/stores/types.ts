@@ -46,4 +46,7 @@ export interface Station {
   };
   totalDocks: number;
   availableBikes: number;
+  predictedAvailability?: number | null;
+  trend?: string;
+  confidence?: number;
 }

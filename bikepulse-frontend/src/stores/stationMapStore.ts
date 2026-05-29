@@ -34,6 +34,9 @@ function normalizeStation(raw: Record<string, unknown>): Station {
           ? [lng, lat] as [number, number] 
           : [0, 0] as [number, number]
       },
+    predictedAvailability: raw.predictedAvailability as number | null | undefined,
+    trend: raw.trend as string | undefined,
+    confidence: raw.confidence as number | undefined,
   };
 }
 

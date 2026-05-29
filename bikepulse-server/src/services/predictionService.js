@@ -64,16 +64,31 @@ class PredictionService {
             const netChange = returnCount - rentalCount;
 
             // 5. 신뢰도 계산 (데이터 많을수록 높음)
-            const confidence = Math.min(history.length / 30, 1.0); // 30개 = 100% 신뢰도
+            const activityScore = returnCount + rentalCount;
+            let confidence = Math.min(activityScore / 10, 1.0); // 15분 내 10건 이상 변화면 신뢰도 100%
+            if (activityScore === 0) confidence = 0.1; // 변화가 아예 없어도 데이터가 있다는 것 자체가 약간의 신뢰
 
             // 6. 예측 확률 계산
-            // 공식: P = (반납수 / 거치대수) × 데이터신뢰도
-            // 최근 반납이 많을수록 높음
-            const returnsRatio = station.totalRackCount > 0 ? returnCount / station.totalRackCount : 0;
-            const predictedAvailability = Math.min(
-                returnsRatio * 100 * confidence,
-                100
-            );
+            // 공식: (순증가량 / 거치대수) 기반 가중치 부여
+            let probability = 0;
+            if (station.totalRackCount > 0) {
+                if (netChange > 0) {
+                    // 반납 추세 (금방 들어올 확률 높음)
+                    probability = Math.min((netChange * 2) / station.totalRackCount * 100, 100);
+                } else if (returnCount > 0) {
+                    // 순증가는 아니지만 지속적인 반납이 일어남 (교체 활발)
+                    probability = Math.min(returnCount / station.totalRackCount * 50, 50);
+                } else if (currentCount === 0) {
+                    // 자전거도 없고 반납도 없으면 거의 가망 없음
+                    probability = 0;
+                } else {
+                    // 자전거는 있는데 대여만 일어남
+                    probability = 10;
+                }
+            }
+
+            // 신뢰도를 가중하여 최종 예측치 도출
+            const predictedAvailability = Math.min(probability * (0.5 + 0.5 * confidence), 100);
 
             // 7. 추세 판단
             let trend = TREND.STABLE;
