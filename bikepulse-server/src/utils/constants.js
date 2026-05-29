@@ -48,7 +48,7 @@ module.exports = {
     PREDICTION: {
         HISTORY_MINUTES: parseInt(process.env.PREDICTION_HISTORY_MINUTES) || 15,
         THRESHOLD: parseFloat(process.env.PREDICTION_THRESHOLD) || 0.7,
-        MIN_DATA_POINTS: 3
+        MIN_DATA_POINTS: 1
     },
 
     // 반경 검색 (미터)

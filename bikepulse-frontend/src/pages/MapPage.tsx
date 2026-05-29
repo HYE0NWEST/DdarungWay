@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft, Heart, X, Navigation, Plus, Minus } from 'lucide-react';
 import { loadKakaoMap } from '../services/map/mapUtils';
 import { useStations } from '../hooks/useStations';
@@ -8,6 +8,7 @@ import type { KakaoMapInstance } from '../types/kakao';
 
 export function MapPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const kakaoMapRef = useRef<KakaoMapInstance | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -27,9 +28,13 @@ export function MapPage() {
     loadKakaoMap(kakaoAppKey).then(() => {
       if (!mapContainerRef.current || !window.kakao) return;
 
-      const center = new window.kakao.maps.LatLng(37.5665, 126.9780); // 기본 서울 시청
+      const state = location.state as { centerLat?: number; centerLng?: number } | null;
+      const initialCenter = state?.centerLat && state?.centerLng
+        ? new window.kakao.maps.LatLng(state.centerLat, state.centerLng)
+        : new window.kakao.maps.LatLng(37.5665, 126.9780); // 기본 서울 시청
+
       const options = {
-        center,
+        center: initialCenter,
         level: 3,
       };
 
@@ -37,8 +42,8 @@ export function MapPage() {
       kakaoMapRef.current = map;
       setIsMapLoaded(true);
 
-      // GPS 위치 가져오기
-      if (navigator.geolocation) {
+      // GPS 위치 가져오기 (전달받은 좌표가 없을 때만 현재 위치로 이동)
+      if (navigator.geolocation && !state?.centerLat) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const userLat = position.coords.latitude;
@@ -64,7 +69,7 @@ export function MapPage() {
     }).catch(err => {
       console.error('Failed to load Kakao Map:', err);
     });
-  }, [kakaoAppKey]);
+  }, [kakaoAppKey, location.state]);
 
   // 2. 정류소 데이터가 로드되면 마커 표시 (최적화 버전)
   const markerMapRef = useRef<Map<string, { marker: { setMap: (map: KakaoMapInstance | null) => void }, content: HTMLDivElement }>>(new Map());

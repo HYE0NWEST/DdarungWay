@@ -19,14 +19,29 @@ import { useStationMapStore } from '../stores/stationMapStore';
 import { Card, CardContent } from '../components/ui/card';
 import { Skeleton } from '../components/ui/skeleton';
 import { loadKakaoMap } from '../services/map/mapUtils';
+import type { Station } from '../stores/types';
+
+import { useUIStore } from '../stores/uiStore';
 
 export function HomePage() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { stats, status, fetchStats } = useTripStore();
   const { recommendations, fetchRecommendations, status: stationStatus } = useStationMapStore();
+  const { setSelectedStationId, setBottomSheetOpen } = useUIStore();
   
   const [locationError, setLocationError] = useState<string | null>(null);
+
+  const handleStationClick = (station: Station) => {
+    setSelectedStationId(station.stationId);
+    setBottomSheetOpen(true);
+    navigate('/map', { 
+      state: { 
+        centerLat: station.location.coordinates[1], 
+        centerLng: station.location.coordinates[0] 
+      } 
+    });
+  };
 
   const refreshNearbyStations = useCallback(() => {
     if (!navigator.geolocation) {
@@ -197,8 +212,8 @@ export function HomePage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    onClick={() => navigate('/map')}
-                    className="bg-white p-4 rounded-[24px] border border-gray-100 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
+                    onClick={() => handleStationClick(station)}
+                    className="bg-white p-4 rounded-[24px] border border-gray-100 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
@@ -209,16 +224,18 @@ export function HomePage() {
                       <div className="flex flex-col">
                         <h4 className="text-sm font-black text-neutral-800 line-clamp-1">{station.name}</h4>
                         <p className="text-[10px] font-bold text-neutral-400">{station.address || '서울시 공공자전거'}</p>
-                        {station.predictedAvailability != null && station.predictedAvailability > 0 && (
-                          <div className="flex items-center gap-1 mt-1.5 bg-blue-50/50 w-max px-2 py-0.5 rounded-md border border-blue-100/50">
-                            <span className="text-[9px] font-black text-blue-600">
-                              예측 {station.predictedAvailability}%
-                            </span>
+                        <div className="flex items-center gap-1 mt-1.5 bg-blue-50/50 w-max px-2 py-0.5 rounded-md border border-blue-100/50">
+                          <span className="text-[9px] font-black text-blue-600">
+                            {station.predictedAvailability != null 
+                              ? `예측 ${station.predictedAvailability}%` 
+                              : '예측 데이터 분석 중...'}
+                          </span>
+                          {station.predictedAvailability != null && (
                             <span className="text-[8px]">
                               {(station.confidence || 0) > 0.7 ? '⭐⭐⭐' : (station.confidence || 0) > 0.3 ? '⭐⭐' : '⭐'}
                             </span>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="text-right flex flex-col justify-between h-full">
