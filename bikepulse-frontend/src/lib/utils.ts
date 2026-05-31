@@ -17,7 +17,7 @@ export function vibrate(pattern: number | number[] = 50) {
  * 🔄 청크 로드 실패 시 자동 재시도를 포함한 Lazy Loading 유틸리티
  * 새 버전 배포 후 구버전 청크(JS 파일)가 404를 반환할 때 페이지를 새로고침하여 복구합니다.
  */
-export function lazyWithRetry<T extends ComponentType<any>>(
+export function lazyWithRetry<T extends ComponentType<object>>(
   componentImport: () => Promise<{ default: T }>
 ) {
   return lazy(async () => {
