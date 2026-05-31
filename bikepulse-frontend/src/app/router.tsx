@@ -1,7 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import { AppLayout } from '../components/AppLayout';
+import { lazyWithRetry } from '../lib/utils';
 
 // 로딩 화면을 위한 간단한 컴포넌트
 const PageLoader = () => (
@@ -11,27 +12,27 @@ const PageLoader = () => (
 );
 
 // Lazy Loading 적용 (컴포넌트 선언만 하여 lint 에러 방지)
-const HomePageComp = lazy(() => import('../pages/HomePage').then(module => ({ default: module.HomePage })));
-const LoginPageComp = lazy(() => import('../pages/LoginPage').then(module => ({ default: module.LoginPage })));
-const SignupPageComp = lazy(() => import('../pages/SignupPage').then(module => ({ default: module.SignupPage })));
-const ForgotPasswordPageComp = lazy(() => import('../pages/ForgotPasswordPage').then(module => ({ default: module.ForgotPasswordPage })));
-const MapPageComp = lazy(() => import('../pages/MapPage').then(module => ({ default: module.MapPage })));
-const PaymentPageComp = lazy(() => import('../pages/PaymentPage').then(module => ({ default: module.PaymentPage })));
-const PaymentSuccessPageComp = lazy(() => import('../pages/PaymentSuccessPage').then(module => ({ default: module.PaymentSuccessPage })));
-const ProfilePageComp = lazy(() => import('../pages/ProfilePage').then(module => ({ default: module.ProfilePage })));
-const TripPageComp = lazy(() => import('../pages/TripPage').then(module => ({ default: module.TripPage })));
-const KakaoCallbackComp = lazy(() => import('../pages/KakaoCallback').then(module => ({ default: module.KakaoCallback })));
-const GoogleCallbackComp = lazy(() => import('../pages/GoogleCallback').then(module => ({ default: module.GoogleCallback })));
-const ProfileSettingsPageComp = lazy(() => import('../pages/ProfileSettingsPage').then(module => ({ default: module.ProfileSettingsPage })));
-const ManagePassPageComp = lazy(() => import('../pages/ManagePassPage').then(module => ({ default: module.ManagePassPage })));
-const SupportPageComp = lazy(() => import('../pages/SupportPage').then(module => ({ default: module.SupportPage })));
-const NotificationSettingsPageComp = lazy(() => import('../pages/NotificationSettingsPage').then(module => ({ default: module.NotificationSettingsPage })));
-const TripHistoryPageComp = lazy(() => import('../pages/TripHistoryPage').then(module => ({ default: module.TripHistoryPage })));
-const LandingPageComp = lazy(() => import('../pages/LandingPage').then(module => ({ default: module.LandingPage })));
-const ProfileFavoritesPageComp = lazy(() => import('../pages/ProfileFavoritesPage').then(module => ({ default: module.ProfileFavoritesPage })));
-const InquiryPageComp = lazy(() => import('../pages/InquiryPage').then(module => ({ default: module.InquiryPage })));
-const NewInquiryPageComp = lazy(() => import('../pages/NewInquiryPage').then(module => ({ default: module.NewInquiryPage })));
-const InquiryDetailPageComp = lazy(() => import('../pages/InquiryDetailPage').then(module => ({ default: module.InquiryDetailPage })));
+const HomePageComp = lazyWithRetry(() => import('../pages/HomePage').then(module => ({ default: module.HomePage })));
+const LoginPageComp = lazyWithRetry(() => import('../pages/LoginPage').then(module => ({ default: module.LoginPage })));
+const SignupPageComp = lazyWithRetry(() => import('../pages/SignupPage').then(module => ({ default: module.SignupPage })));
+const ForgotPasswordPageComp = lazyWithRetry(() => import('../pages/ForgotPasswordPage').then(module => ({ default: module.ForgotPasswordPage })));
+const MapPageComp = lazyWithRetry(() => import('../pages/MapPage').then(module => ({ default: module.MapPage })));
+const PaymentPageComp = lazyWithRetry(() => import('../pages/PaymentPage').then(module => ({ default: module.PaymentPage })));
+const PaymentSuccessPageComp = lazyWithRetry(() => import('../pages/PaymentSuccessPage').then(module => ({ default: module.PaymentSuccessPage })));
+const ProfilePageComp = lazyWithRetry(() => import('../pages/ProfilePage').then(module => ({ default: module.ProfilePage })));
+const TripPageComp = lazyWithRetry(() => import('../pages/TripPage').then(module => ({ default: module.TripPage })));
+const KakaoCallbackComp = lazyWithRetry(() => import('../pages/KakaoCallback').then(module => ({ default: module.KakaoCallback })));
+const GoogleCallbackComp = lazyWithRetry(() => import('../pages/GoogleCallback').then(module => ({ default: module.GoogleCallback })));
+const ProfileSettingsPageComp = lazyWithRetry(() => import('../pages/ProfileSettingsPage').then(module => ({ default: module.ProfileSettingsPage })));
+const ManagePassPageComp = lazyWithRetry(() => import('../pages/ManagePassPage').then(module => ({ default: module.ManagePassPage })));
+const SupportPageComp = lazyWithRetry(() => import('../pages/SupportPage').then(module => ({ default: module.SupportPage })));
+const NotificationSettingsPageComp = lazyWithRetry(() => import('../pages/NotificationSettingsPage').then(module => ({ default: module.NotificationSettingsPage })));
+const TripHistoryPageComp = lazyWithRetry(() => import('../pages/TripHistoryPage').then(module => ({ default: module.TripHistoryPage })));
+const LandingPageComp = lazyWithRetry(() => import('../pages/LandingPage').then(module => ({ default: module.LandingPage })));
+const ProfileFavoritesPageComp = lazyWithRetry(() => import('../pages/ProfileFavoritesPage').then(module => ({ default: module.ProfileFavoritesPage })));
+const InquiryPageComp = lazyWithRetry(() => import('../pages/InquiryPage').then(module => ({ default: module.InquiryPage })));
+const NewInquiryPageComp = lazyWithRetry(() => import('../pages/NewInquiryPage').then(module => ({ default: module.NewInquiryPage })));
+const InquiryDetailPageComp = lazyWithRetry(() => import('../pages/InquiryDetailPage').then(module => ({ default: module.InquiryDetailPage })));
 
 export const appRouter = createBrowserRouter([
   {

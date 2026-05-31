@@ -25,6 +25,23 @@ export class ErrorBoundary extends Component<Props, State> {
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // 에러 로깅 서비스에 에러를 기록할 수 있습니다 (예: Sentry)
     console.error('Uncaught error:', error, errorInfo);
+
+    // 🚀 버전 불일치(새 배포)로 인한 청크 로드 실패 자동 복구 로직
+    const isChunkError = 
+      error.message.includes('Failed to fetch dynamically imported module') || 
+      error.message.includes('ChunkLoadError');
+
+    if (isChunkError) {
+      const lastReload = sessionStorage.getItem('last-chunk-fix-reload');
+      const now = Date.now();
+      
+      // 10초 이내에 재시도한 적이 없다면 자동 새로고침하여 새 버전 로드
+      if (!lastReload || now - parseInt(lastReload) > 10000) {
+        sessionStorage.setItem('last-chunk-fix-reload', now.toString());
+        console.info('새 버전 배포 감지: 청크를 다시 로드하기 위해 페이지를 새로고침합니다.');
+        window.location.reload();
+      }
+    }
   }
 
   private handleReset = () => {
