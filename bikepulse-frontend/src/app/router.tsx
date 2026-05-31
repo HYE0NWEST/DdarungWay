@@ -17,6 +17,7 @@ const SignupPageComp = lazy(() => import('../pages/SignupPage').then(module => (
 const ForgotPasswordPageComp = lazy(() => import('../pages/ForgotPasswordPage').then(module => ({ default: module.ForgotPasswordPage })));
 const MapPageComp = lazy(() => import('../pages/MapPage').then(module => ({ default: module.MapPage })));
 const PaymentPageComp = lazy(() => import('../pages/PaymentPage').then(module => ({ default: module.PaymentPage })));
+const PaymentSuccessPageComp = lazy(() => import('../pages/PaymentSuccessPage').then(module => ({ default: module.PaymentSuccessPage })));
 const ProfilePageComp = lazy(() => import('../pages/ProfilePage').then(module => ({ default: module.ProfilePage })));
 const TripPageComp = lazy(() => import('../pages/TripPage').then(module => ({ default: module.TripPage })));
 const KakaoCallbackComp = lazy(() => import('../pages/KakaoCallback').then(module => ({ default: module.KakaoCallback })));
@@ -54,6 +55,7 @@ export const appRouter = createBrowserRouter([
           { path: 'map', element: <MapPageComp /> },
           { path: 'trip', element: <TripPageComp /> },
           { path: 'payment', element: <PaymentPageComp /> },
+          { path: 'payment/success', element: <PaymentSuccessPageComp /> },
           { path: 'profile', element: <ProfilePageComp /> },
           { path: 'profile/history', element: <TripHistoryPageComp /> },
           { path: 'profile/favorites', element: <ProfileFavoritesPageComp /> },
