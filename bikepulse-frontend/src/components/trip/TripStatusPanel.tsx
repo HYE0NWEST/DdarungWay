@@ -136,7 +136,7 @@ export const TripStatusPanel = ({
                 <div className="flex flex-col gap-3">
                   <div className="flex gap-3">
                     <button onClick={onCancel} className="px-6 py-5 bg-neutral-100 rounded-[24px] text-neutral-600 font-black text-sm">예약 취소</button>
-                    <button onClick={onOpenScanner} disabled={status === 'loading'} className="flex-1 py-5 bg-primary-500 rounded-[24px] text-white font-black text-lg shadow-lg">도착했습니다! 대여 시작</button>
+                    <button onClick={onOpenScanner} disabled={status === 'loading'} className="flex-1 py-5 bg-primary-500 rounded-[24px] text-white font-black text-lg shadow-lg">대여시작</button>
                   </div>
                   
                   <div className="flex gap-2">
